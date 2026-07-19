@@ -1,0 +1,70 @@
+{
+  "app": {
+    "name": "MD Portal",
+    "company": "M.D. for Medical Supplies"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "crm": "Sales CRM",
+    "inventory": "Inventory",
+    "purchasing": "Purchasing",
+    "hr": "HR",
+    "attendance": "Attendance",
+    "users": "Users"
+  },
+  "login": {
+    "title": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "error": "Invalid email or password",
+    "inactive": "Your account is deactivated. Contact your administrator."
+  },
+  "header": {
+    "language": "عربي",
+    "signOut": "Sign out",
+    "profile": "Profile"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}",
+    "announcements": "Announcements",
+    "noAnnouncements": "No announcements yet.",
+    "comingSoon": "This module arrives in a later phase."
+  },
+  "users": {
+    "title": "User management",
+    "name": "Name",
+    "nameAr": "Name (Arabic)",
+    "role": "Role",
+    "department": "Department",
+    "phone": "Phone",
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "saved": "Saved",
+    "error": "Could not save changes",
+    "empty": "No users yet.",
+    "inviteHint": "To add a user: Supabase Dashboard → Authentication → Add user (email + password). The profile appears here automatically — then assign a role.",
+    "confirmDeactivate": "Deactivate {{name}}? They will keep their history but lose access at next sign-in."
+  },
+  "roles": {
+    "admin": "Admin",
+    "manager": "Manager",
+    "sales_rep": "Sales rep",
+    "warehouse": "Warehouse",
+    "hr": "HR",
+    "employee": "Employee"
+  },
+  "placeholder": {
+    "title": "{{module}}",
+    "body": "This module is being built in an upcoming phase."
+  },
+  "common": {
+    "loading": "Loading…",
+    "none": "—"
+  }
+}

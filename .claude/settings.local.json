@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(gh --version)",
+      "Bash(gh auth *)",
+      "Bash(curl -sI https://nodejs.org/dist/v22.14.0/node-v22.14.0-darwin-arm64.tar.gz)",
+      "Bash(curl -sL -o node.tar.gz https://nodejs.org/dist/v22.14.0/node-v22.14.0-darwin-arm64.tar.gz)",
+      "Bash(tar xzf *)",
+      "Bash(./node-v22.14.0-darwin-arm64/bin/node --version)",
+      "Bash(chmod +x /Users/ahmedhassan/Desktop/MD/AI/CRM/.claude/dev.sh)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c user.name=Ahmed -c user.email=ahmedmahmoud96@gmail.com commit -q -m 'Phase 1 — Foundation: schema+RLS, auth, bilingual RTL shell, role-aware nav, user management, Pages deploy pipeline *)"
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "md-portal-dev",
+      "runtimeExecutable": "/Users/ahmedhassan/Desktop/MD/AI/CRM/.claude/dev.sh",
+      "runtimeArgs": [],
+      "port": 5173
+    }
+  ]
+}
