@@ -148,7 +148,7 @@ Build in this order; stop after each phase for user review before continuing:
 
 ## 11. Non-goals (v1)
 
-- **No accounting/P&L/collections module** — finance tracking lives in a separate tool; `usage_invoices` here is an operational record, not the books.
+- **No accounting/P&L/collections module in v1 — but design ahead for it** *(update 2026-07-21, per GM)*: accounting/collections WILL be added as a future phase. `usage_invoices` carries a nullable `due_date` (payment terms nominally 90 days) and is structured so a future `payments` table can reference `invoice_id` with partial payments (hospitals pay in installments). Per-hospital outstanding balance must stay derivable (sum of invoice totals minus sum of payments) — never store balance columns. `usage_invoices` remains an operational record, not the books.
 - **No ETA e-invoicing integration** — future phase; keep invoice records exportable (CSV) so this can bolt on later.
 - **No payroll** — HR is leave + attendance only.
 - **No offline mode** — reps need connectivity to log; acceptable for v1.
@@ -156,7 +156,7 @@ Build in this order; stop after each phase for user review before continuing:
 
 ## 12. Open questions to ask the user during Phase 1
 
-1. Can sales reps see other reps' hospitals read-only, or nothing at all? (default: nothing)
-2. Which email address pattern for logins? (e.g., name@mdformedicalsupplies.com vs personal emails)
-3. Leave types and annual balance defaults per Egyptian labor law norms — confirm the company's actual policy numbers.
-4. Should quotation prices be visible to sales_rep role or manager-set only?
+1. Can sales reps see other reps' hospitals read-only, or nothing at all? — **ANSWERED: read-only** (edits/activity own-only; GM controls rep↔hospital assignment). Implemented in migration 002.
+2. Which email address pattern for logins? — **ANSWERED: both** company-domain and personal emails.
+3. Leave types and annual balance defaults — **ANSWERED: 21 annual + 7 sick**; exceptions grantable by GM and VP (Amr Lotfy), both `admin` role. (Phase 5)
+4. Should quotation prices be visible to sales_rep role or manager-set only? — **ANSWERED: manager-set only** (sales manager Wael Osman); enforce in RLS in Phase 4.

@@ -65,6 +65,145 @@
   },
   "common": {
     "loading": "Loading…",
-    "none": "—"
+    "none": "—",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search…",
+    "all": "All",
+    "actions": "Actions",
+    "notes": "Notes",
+    "date": "Date",
+    "error": "Something went wrong. Try again.",
+    "confirmDelete": "Delete this item? This cannot be undone.",
+    "readOnly": "Read-only"
+  },
+  "crm": {
+    "hospitals": "Hospitals",
+    "deals": "Deals",
+    "hospital": "Hospital",
+    "newHospital": "New hospital",
+    "editHospital": "Edit hospital",
+    "name": "Name",
+    "nameAr": "Name (Arabic)",
+    "governorate": "Governorate",
+    "sector": "Sector",
+    "status": "Status",
+    "assignedRep": "Assigned rep",
+    "unassigned": "Unassigned",
+    "paymentNotes": "Payment behavior / notes",
+    "emptyHospitals": "No hospitals yet. Add your first hospital to start building the pipeline.",
+    "sectors": {
+      "government": "Government",
+      "private": "Private",
+      "university": "University",
+      "military": "Military"
+    },
+    "statuses": {
+      "active": "Active",
+      "prospect": "Prospect",
+      "dormant": "Dormant"
+    },
+    "tabs": {
+      "info": "Info",
+      "contacts": "Contacts",
+      "deals": "Deals",
+      "activity": "Activity",
+      "stock": "Shelf stock"
+    },
+    "contact": {
+      "new": "Add contact",
+      "edit": "Edit contact",
+      "name": "Name",
+      "roleTitle": "Role / title",
+      "phone": "Phone",
+      "empty": "No contacts yet. Add the people you deal with at this hospital."
+    },
+    "deal": {
+      "new": "New deal",
+      "edit": "Edit deal",
+      "title": "Title",
+      "stage": "Stage",
+      "expectedValue": "Expected value",
+      "currency": "Currency",
+      "expectedClose": "Expected close",
+      "owner": "Owner",
+      "empty": "No deals yet. Create a deal to track an opportunity.",
+      "kanban": "Board",
+      "table": "Table",
+      "stages": {
+        "lead": "Lead",
+        "qualified": "Qualified",
+        "tender_quotation": "Tender / Quotation",
+        "won": "Won",
+        "lost": "Lost"
+      }
+    },
+    "activity": {
+      "new": "Log activity",
+      "type": "Type",
+      "body": "Details",
+      "empty": "No activity yet. Log calls, meetings and notes here.",
+      "types": {
+        "call": "Call",
+        "meeting": "Meeting",
+        "note": "Note",
+        "visit": "Visit"
+      }
+    },
+    "stockEmpty": "Nothing on this hospital's shelf yet. Stock appears here after a transfer from the warehouse."
+  },
+  "inv": {
+    "stock": "Stock on hand",
+    "movements": "Movements",
+    "products": "Products",
+    "locations": "Locations",
+    "product": "Product",
+    "location": "Location",
+    "lot": "Lot no.",
+    "expiry": "Expiry",
+    "qty": "Qty",
+    "sku": "SKU",
+    "manufacturer": "Manufacturer",
+    "category": "Category",
+    "unit": "Unit",
+    "priceEgp": "Price (EGP)",
+    "priceForeign": "Foreign price",
+    "currency": "Currency",
+    "active": "Active",
+    "newProduct": "New product",
+    "editProduct": "Edit product",
+    "emptyProducts": "No products yet. Add your first product to start tracking stock.",
+    "emptyStock": "No stock yet. Record a receive movement to bring stock in.",
+    "warehouse": "Warehouse",
+    "hospitalShelf": "Hospital shelf",
+    "newWarehouse": "Add warehouse",
+    "warehouseName": "Warehouse name",
+    "emptyLocations": "No locations yet. Add your two company warehouses; hospital shelves are created automatically with each hospital.",
+    "autoLocationHint": "Hospital shelf locations are created automatically when a hospital is added in the CRM.",
+    "movement": {
+      "new": "New movement",
+      "type": "Type",
+      "from": "From",
+      "to": "To",
+      "reason": "Reason",
+      "direction": "Direction",
+      "increase": "Add stock",
+      "decrease": "Remove stock",
+      "voided": "Voided",
+      "void": "Void",
+      "voidPrompt": "Void this movement? It stays in the record marked as voided. Enter the reason:",
+      "voidReasonRequired": "A reason is required to void a movement.",
+      "empty": "No stock movements yet. Use “New movement” to receive stock from a supplier.",
+      "types": {
+        "receive": "Receive",
+        "transfer": "Transfer",
+        "usage": "Usage",
+        "return": "Return",
+        "adjustment": "Adjustment"
+      }
+    }
   }
 }

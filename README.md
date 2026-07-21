@@ -49,6 +49,12 @@ Find both values under **Project Settings → API**. The anon/publishable key is
 
 **Roles:** `admin` (GM/VP — everything), `manager` (sales manager), `sales_rep`, `warehouse`, `hr`, `employee`. One role per user; the permission matrix is in [`MD_Portal_Build_Spec.md`](MD_Portal_Build_Spec.md) §5 and enforced by RLS policies in the migration file.
 
+## Design-ahead notes
+
+- **Collections/accounting is a future phase** (decided 2026-07-21): `usage_invoices.due_date` exists now (terms nominally 90 days); a future `payments` table will reference `invoice_id` and support partial payments. Outstanding balance per hospital is always *derived* (invoices minus payments) — never stored. Later phases must not break this.
+- Sales reps see **all** hospitals/contacts read-only; they can edit only their own assignments. The GM controls rep↔hospital assignment.
+- Quotation prices are manager/admin-set only (from Phase 4).
+
 ## Project phases
 
 Built phase-by-phase per the [build spec](MD_Portal_Build_Spec.md):
