@@ -61,7 +61,7 @@ Built phase-by-phase per the [build spec](MD_Portal_Build_Spec.md):
 
 - [x] **Phase 1 — Foundation:** schema + RLS, auth, bilingual RTL shell, role-aware nav, user management, Pages deploy pipeline
 - [x] Phase 2 — CRM + Inventory core *(checkpoint passed 23/11/2026)*
-- [ ] Phase 3 — Consignment engine (shelf counts → usage invoices)
+- [x] Phase 3 — Consignment engine (shelf counts → usage invoices) *(checkpoint passed 23/11/2026)*
 - [ ] Phase 4 — Purchasing (POs, quotations, PDFs)
 - [ ] Phase 5 — HR + Attendance
 - [ ] Phase 6 — Polish
