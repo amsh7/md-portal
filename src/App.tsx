@@ -13,6 +13,9 @@ import Deals from './pages/crm/Deals';
 import InventoryLayout from './pages/inventory/InventoryLayout';
 import Stock from './pages/inventory/Stock';
 import Movements from './pages/inventory/Movements';
+import Counts from './pages/inventory/Counts';
+import CountEditor from './pages/inventory/CountEditor';
+import Invoices from './pages/inventory/Invoices';
 import Products from './pages/inventory/Products';
 import Locations from './pages/inventory/Locations';
 import { navForRole } from './lib/roles';
@@ -62,6 +65,9 @@ export default function App() {
           <Route path="inventory" element={<Guard path="/inventory"><InventoryLayout /></Guard>}>
             <Route index element={<Stock />} />
             <Route path="movements" element={<Movements />} />
+            <Route path="counts" element={<Counts />} />
+            <Route path="counts/:id" element={<CountEditor />} />
+            <Route path="invoices" element={<Invoices />} />
             <Route path="products" element={<Products />} />
             <Route path="locations" element={<Locations />} />
           </Route>

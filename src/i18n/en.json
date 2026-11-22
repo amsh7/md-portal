@@ -173,6 +173,7 @@
     "priceForeign": "Foreign price",
     "currency": "Currency",
     "active": "Active",
+    "minQty": "Min warehouse qty (for low-stock alert)",
     "newProduct": "New product",
     "editProduct": "Edit product",
     "emptyProducts": "No products yet. Add your first product to start tracking stock.",
@@ -205,5 +206,57 @@
         "adjustment": "Adjustment"
       }
     }
+  },
+  "counts": {
+    "title": "Shelf counts",
+    "new": "New count",
+    "start": "Start monthly count",
+    "rep": "Rep",
+    "countedAt": "Count date",
+    "expected": "Expected",
+    "counted": "Counted",
+    "usage": "Usage",
+    "saveDraft": "Save draft",
+    "submit": "Submit for approval",
+    "confirmSubmit": "Submit this count? You will not be able to edit it afterwards — a manager reviews and approves it.",
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirmApprove": "Approve this count? This writes usage movements, reduces the shelf stock, and issues a usage invoice. It cannot be undone.",
+    "confirmReject": "Reject this count? The rep will need to start a new one.",
+    "approvedMsg": "Count approved — invoice issued.",
+    "approvedNoUsage": "Count approved. No usage, so no invoice was issued.",
+    "rejectedMsg": "Count rejected.",
+    "empty": "No shelf counts yet. Start a monthly count from a hospital page or with the button above.",
+    "emptyLines": "Nothing on this hospital's shelf — nothing to count.",
+    "negative": "Counted more than expected — check for unrecorded deliveries",
+    "large": "Unusually large usage — double-check before approving",
+    "chooseHospital": "Choose a hospital",
+    "statuses": {
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    }
+  },
+  "invoices": {
+    "title": "Usage invoices",
+    "no": "Invoice no.",
+    "due": "Due",
+    "total": "Total",
+    "status": "Status",
+    "empty": "No usage invoices yet — they are created when a shelf count is approved.",
+    "exportCsv": "Export CSV"
+  },
+  "alerts": {
+    "title": "Alerts",
+    "expiring": "Lots expiring within 90 days",
+    "lowStock": "Low warehouse stock",
+    "overdueCounts": "Hospitals overdue for a count (>35 days)",
+    "pendingCounts": "Shelf counts awaiting approval",
+    "myDueCounts": "Your hospitals due for a monthly count",
+    "none": "Nothing needs attention.",
+    "lastCount": "Last count: {{date}}",
+    "neverCounted": "Never counted",
+    "below": "{{qty}} in warehouses (min {{min}})"
   }
 }

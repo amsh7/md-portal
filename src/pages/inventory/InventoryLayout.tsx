@@ -11,6 +11,7 @@ export default function InventoryLayout() {
     }`;
 
   const showMovements = profile && ['admin', 'manager', 'warehouse'].includes(profile.role);
+  const showCounts = profile && ['admin', 'manager', 'sales_rep'].includes(profile.role);
   const showLocations = profile?.role === 'admin';
 
   return (
@@ -18,6 +19,8 @@ export default function InventoryLayout() {
       <div className="flex gap-1 border-b mb-4 overflow-x-auto">
         <NavLink to="/inventory" end className={tabCls}>{t('inv.stock')}</NavLink>
         {showMovements && <NavLink to="/inventory/movements" className={tabCls}>{t('inv.movements')}</NavLink>}
+        {showCounts && <NavLink to="/inventory/counts" className={tabCls}>{t('counts.title')}</NavLink>}
+        {showCounts && <NavLink to="/inventory/invoices" className={tabCls}>{t('invoices.title')}</NavLink>}
         <NavLink to="/inventory/products" className={tabCls}>{t('inv.products')}</NavLink>
         {showLocations && <NavLink to="/inventory/locations" className={tabCls}>{t('inv.locations')}</NavLink>}
       </div>

@@ -1,15 +1,17 @@
 import { FormEvent, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useLocations, useProducts, useProfiles, byId } from '../../lib/queries';
 import { Activity, Contact, Deal, Hospital, StockRow } from '../../lib/types';
+import { ShelfCount, createShelfCount } from '../../lib/counts';
 import { fmtDate, fmtMoney, fmtQty } from '../../lib/format';
 import { EmptyState, ErrorNote, Field, Loading, Modal, PrimaryButton, inputCls } from '../../components/ui';
 import { HospitalFormFields, HospitalForm } from './Hospitals';
 import { DealFormModal } from './Deals';
+import { CountStatusBadge } from '../inventory/Counts';
 
 type Tab = 'info' | 'contacts' | 'deals' | 'activity' | 'stock';
 
@@ -65,7 +67,7 @@ export default function HospitalDetail() {
       {tab === 'contacts' && <ContactsTab hospitalId={hospital.id} canEdit={canEdit} />}
       {tab === 'deals' && <DealsTab hospital={hospital} canEdit={canEdit} />}
       {tab === 'activity' && <ActivityTab hospitalId={hospital.id} canEdit={canEdit} />}
-      {tab === 'stock' && <StockTab hospitalId={hospital.id} />}
+      {tab === 'stock' && <StockTab hospitalId={hospital.id} canCount={canEdit} />}
     </div>
   );
 }
@@ -373,12 +375,32 @@ function ActivityTab({ hospitalId, canEdit }: { hospitalId: string; canEdit: boo
   );
 }
 
-function StockTab({ hospitalId }: { hospitalId: string }) {
+function StockTab({ hospitalId, canCount }: { hospitalId: string; canCount: boolean }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data: locations } = useLocations();
   const { data: products } = useProducts();
   const productMap = byId(products);
   const location = (locations ?? []).find((l) => l.hospital_id === hospitalId);
+
+  const { data: counts } = useQuery({
+    queryKey: ['counts', hospitalId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('shelf_counts')
+        .select('*')
+        .eq('hospital_id', hospitalId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data as ShelfCount[];
+    },
+  });
+
+  const startCount = useMutation({
+    mutationFn: () => createShelfCount(hospitalId),
+    onSuccess: (id) => navigate(`/inventory/counts/${id}`),
+  });
 
   const { data: stock, isLoading } = useQuery({
     queryKey: ['stock', location?.id],
@@ -393,30 +415,53 @@ function StockTab({ hospitalId }: { hospitalId: string }) {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="bg-white rounded-lg border overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b bg-gray-50">
-            <th className="px-4 py-2.5 text-start font-semibold">{t('inv.product')}</th>
-            <th className="px-4 py-2.5 text-start font-semibold">{t('inv.lot')}</th>
-            <th className="px-4 py-2.5 text-start font-semibold">{t('inv.expiry')}</th>
-            <th className="px-4 py-2.5 text-end font-semibold">{t('inv.qty')}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y">
-          {!stock?.length && (
-            <tr><td colSpan={4}><EmptyState hint={t('crm.stockEmpty')} /></td></tr>
-          )}
-          {stock?.map((s) => (
-            <tr key={`${s.product_id}-${s.lot_no}`}>
-              <td className="px-4 py-2.5">{productMap[s.product_id]?.name ?? s.product_id}</td>
-              <td className="px-4 py-2.5" dir="ltr">{s.lot_no}</td>
-              <td className="px-4 py-2.5">{fmtDate(s.expiry_date)}</td>
-              <td className="px-4 py-2.5 text-end">{fmtQty(s.qty)}</td>
+    <div className="space-y-3">
+      {canCount && (
+        <PrimaryButton disabled={startCount.isPending} onClick={() => startCount.mutate()}>
+          {t('counts.start')}
+        </PrimaryButton>
+      )}
+      <div className="bg-white rounded-lg border overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b bg-gray-50">
+              <th className="px-4 py-2.5 text-start font-semibold">{t('inv.product')}</th>
+              <th className="px-4 py-2.5 text-start font-semibold">{t('inv.lot')}</th>
+              <th className="px-4 py-2.5 text-start font-semibold">{t('inv.expiry')}</th>
+              <th className="px-4 py-2.5 text-end font-semibold">{t('inv.qty')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y">
+            {!stock?.length && (
+              <tr><td colSpan={4}><EmptyState hint={t('crm.stockEmpty')} /></td></tr>
+            )}
+            {stock?.map((s) => (
+              <tr key={`${s.product_id}-${s.lot_no}`}>
+                <td className="px-4 py-2.5">{productMap[s.product_id]?.name ?? s.product_id}</td>
+                <td className="px-4 py-2.5" dir="ltr">{s.lot_no}</td>
+                <td className="px-4 py-2.5">{fmtDate(s.expiry_date)}</td>
+                <td className="px-4 py-2.5 text-end">{fmtQty(s.qty)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {!!counts?.length && (
+        <div className="bg-white rounded-lg border">
+          <h3 className="px-4 py-2.5 border-b font-semibold text-sm">{t('counts.title')}</h3>
+          <ul className="divide-y">
+            {counts.map((c) => (
+              <li key={c.id} className="px-4 py-2.5 flex items-center justify-between text-sm">
+                <Link to={`/inventory/counts/${c.id}`} className="text-brand-red hover:underline">
+                  {fmtDate(c.counted_at)}
+                </Link>
+                <CountStatusBadge status={c.status} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

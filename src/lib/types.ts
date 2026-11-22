@@ -58,6 +58,7 @@ export interface Product {
   price_foreign: number | null;
   currency: string | null;
   active: boolean;
+  min_warehouse_qty: number | null;
 }
 
 export interface Location {

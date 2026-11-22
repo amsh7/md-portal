@@ -20,11 +20,12 @@ interface ProductForm {
   price_foreign: string;
   currency: string;
   active: boolean;
+  min_warehouse_qty: string;
 }
 
 const emptyForm: ProductForm = {
   sku: '', name: '', name_ar: '', manufacturer: '', category: '', unit: 'unit',
-  price_egp: '', price_foreign: '', currency: '', active: true,
+  price_egp: '', price_foreign: '', currency: '', active: true, min_warehouse_qty: '',
 };
 
 export default function Products() {
@@ -50,6 +51,7 @@ export default function Products() {
         price_foreign: f.price_foreign ? Number(f.price_foreign) : null,
         currency: f.price_foreign ? f.currency || 'USD' : null,
         active: f.active,
+        min_warehouse_qty: f.min_warehouse_qty ? Number(f.min_warehouse_qty) : null,
       };
       const { error } = f.id
         ? await supabase.from('products').update(row).eq('id', f.id)
@@ -117,6 +119,7 @@ export default function Products() {
                           price_foreign: p.price_foreign != null ? String(p.price_foreign) : '',
                           currency: p.currency ?? '',
                           active: p.active,
+                          min_warehouse_qty: p.min_warehouse_qty != null ? String(p.min_warehouse_qty) : '',
                         })
                       }
                     >
@@ -169,6 +172,9 @@ export default function Products() {
                 </select>
               </Field>
             </div>
+            <Field label={t('inv.minQty')}>
+              <input type="number" min="0" step="1" inputMode="numeric" className={inputCls} value={editing.min_warehouse_qty} onChange={(e) => setEditing({ ...editing, min_warehouse_qty: e.target.value })} />
+            </Field>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={editing.active} onChange={(e) => setEditing({ ...editing, active: e.target.checked })} />
               {t('inv.active')}
