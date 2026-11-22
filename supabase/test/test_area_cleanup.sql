@@ -53,4 +53,16 @@ delete from locations where id in (select id from _test_locations);
 -- 5. The TEST product.
 delete from products where id in (select id from _test_products);
 
+-- 6. Resync the invoice counter to the highest invoice number that still
+--    exists this year, so numbering continues correctly after TEST invoices
+--    are removed (back to 0 when none remain — first real invoice is INV-1).
+--    Counters only move DOWN to a truthful value; numbers are never reused.
+update doc_counters dc
+set last_seq = coalesce((
+  select max(split_part(ui.invoice_no, '-', 2)::int)
+  from usage_invoices ui
+  where ui.invoice_no like 'INV-%-MD-' || dc.year
+), 0)
+where dc.kind = 'invoice';
+
 commit;
