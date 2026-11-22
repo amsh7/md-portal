@@ -13,14 +13,16 @@
 begin;
 
 -- Everything is scoped through these three sets and nothing else.
+-- Matching is case-insensitive: 'TEST Hospital', 'Test Hospital', etc. all match.
 create temp table _test_hospitals on commit drop as
-  select id from hospitals where name = 'TEST Hospital';
+  select id from hospitals where lower(name) = 'test hospital';
 create temp table _test_locations on commit drop as
   select id from locations
-  where name = 'TEST Warehouse'
+  where lower(name) = 'test warehouse'
      or hospital_id in (select id from _test_hospitals);
 create temp table _test_products on commit drop as
-  select id from products where sku = 'TEST-001';
+  select id from products
+  where lower(sku) = 'test-001' or lower(name) = 'test product';
 
 -- 1. Consignment paperwork tied to the TEST hospital (defensive; Phase 3+)
 delete from usage_invoice_lines where invoice_id in
