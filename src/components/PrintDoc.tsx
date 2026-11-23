@@ -66,9 +66,11 @@ export default function PrintDoc(p: PrintDocProps) {
         {/* letterhead */}
         <div className="flex items-start justify-between border-b-4 border-brand-red pb-4">
           <div>
-            <div className="text-4xl font-extrabold tracking-tight text-brand-black">
-              MD<span className="text-brand-red">.</span>
-            </div>
+            <img
+              src={`${import.meta.env.BASE_URL}md-logo.png`}
+              alt="M.D. for Medical Supplies"
+              className="h-14 w-auto"
+            />
             <div className="text-sm font-semibold mt-1">M.D. for Medical Supplies</div>
             <div className="text-sm" dir="rtl">إم. دي. للمستلزمات الطبية</div>
           </div>

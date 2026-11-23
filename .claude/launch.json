@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "md-portal-dev",
-      "runtimeExecutable": "/Users/ahmedhassan/Desktop/MD/AI/CRM/.claude/dev.sh",
-      "runtimeArgs": [],
+      "runtimeExecutable": "/private/tmp/claude-501/-Users-ahmedhassan-Desktop-MD-AI-CRM/fe7d8ad5-231b-4f04-9511-653b8d697859/scratchpad/node-v22.14.0-darwin-arm64/bin/node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--port", "5173", "--strictPort"],
       "port": 5173
     }
   ]

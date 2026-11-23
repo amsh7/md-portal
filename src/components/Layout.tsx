@@ -48,9 +48,11 @@ export default function Layout() {
       {/* Sidebar (desktop) */}
       <aside className="hidden md:flex w-60 shrink-0 flex-col bg-brand-black">
         <div className="px-5 py-5">
-          <span dir="ltr" className="inline-block text-3xl font-extrabold text-white">
-            MD<span className="text-brand-red">.</span>
-          </span>
+          <img
+            src={`${import.meta.env.BASE_URL}md-logo-white.png`}
+            alt="M.D. for Medical Supplies"
+            className="h-10 w-auto"
+          />
         </div>
         {nav}
       </aside>
@@ -66,9 +68,11 @@ export default function Layout() {
             >
               ☰
             </button>
-            <span dir="ltr" className="md:hidden inline-block text-xl font-extrabold">
-              MD<span className="text-brand-red">.</span>
-            </span>
+            <img
+              src={`${import.meta.env.BASE_URL}md-logo.png`}
+              alt="M.D. for Medical Supplies"
+              className="md:hidden h-7 w-auto"
+            />
           </div>
           <div className="flex items-center gap-4">
             <button

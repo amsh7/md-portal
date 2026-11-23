@@ -61,9 +61,11 @@ export default function Signup() {
     <div className="min-h-screen flex items-center justify-center bg-brand-black px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <span dir="ltr" className="inline-block text-5xl font-extrabold text-white">
-            MD<span className="text-brand-red">.</span>
-          </span>
+          <img
+            src={`${import.meta.env.BASE_URL}md-logo-white.png`}
+            alt="M.D. for Medical Supplies"
+            className="h-14 w-auto mx-auto"
+          />
           <p className="text-gray-400 mt-2 text-sm">{t('app.company')}</p>
         </div>
         {notice ? (
