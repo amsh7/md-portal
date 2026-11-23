@@ -12,6 +12,7 @@ export default function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [detail, setDetail] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -19,6 +20,7 @@ export default function Signup() {
     e.preventDefault();
     setBusy(true);
     setError(null);
+    setDetail(null);
     try {
       // Pre-check the invite code so the error is clear (the DB enforces it again).
       const { data: ok, error: checkErr } = await supabase.rpc('check_invite', { p_code: code });
@@ -34,12 +36,15 @@ export default function Signup() {
       });
       if (signErr) {
         setError(
-          /already|exists|registered/i.test(signErr.message)
-            ? t('signup.emailExists')
-            : /password/i.test(signErr.message)
-              ? t('signup.weakPassword')
-              : t('common.error'),
+          /invite/i.test(signErr.message)
+            ? t('signup.invalidCode')
+            : /already|exists|registered/i.test(signErr.message)
+              ? t('signup.emailExists')
+              : /password/i.test(signErr.message)
+                ? t('signup.weakPassword')
+                : t('common.error'),
         );
+        setDetail(signErr.message);
         return;
       }
       if (!data.session) {
@@ -100,6 +105,7 @@ export default function Signup() {
               <p className="text-xs text-gray-400 mt-1">{t('signup.passwordHint')}</p>
             </div>
             {error && <p className="text-sm text-brand-red">{error}</p>}
+            {detail && <p className="text-xs text-gray-400" dir="ltr">({detail})</p>}
             <button
               type="submit" disabled={busy || !code.trim() || !name.trim()}
               className="w-full bg-brand-red text-white font-semibold rounded py-2.5 hover:bg-red-700 disabled:opacity-50"
