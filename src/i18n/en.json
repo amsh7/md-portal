@@ -29,7 +29,8 @@
     "welcome": "Welcome, {{name}}",
     "announcements": "Announcements",
     "noAnnouncements": "No announcements yet.",
-    "comingSoon": "This module arrives in a later phase."
+    "comingSoon": "This module arrives in a later phase.",
+    "myBalance": "Leave balance: {{annual}} annual · {{sick}} sick"
   },
   "users": {
     "title": "User management",
@@ -49,7 +50,15 @@
     "error": "Could not save changes",
     "empty": "No users yet.",
     "inviteHint": "To add a user: Supabase Dashboard → Authentication → Add user (email + password). The profile appears here automatically — then assign a role.",
-    "confirmDeactivate": "Deactivate {{name}}? They will keep their history but lose access at next sign-in."
+    "confirmDeactivate": "Deactivate {{name}}? They will keep their history but lose access at next sign-in.",
+    "invitesTitle": "Invite codes",
+    "invitesHint": "Generate a code, choose the role, and send it to the person (e.g. on WhatsApp). They create their own account with their own email and password on the sign-up page.",
+    "newInvite": "New invite code",
+    "noInvites": "No invite codes yet.",
+    "copyInvite": "Copy invite",
+    "copied": "Copied!",
+    "inviteUsedBy": "Used by {{name}}",
+    "inviteMessage": "Your MD Portal invite code: {{code}}\nCreate your account here: {{url}}"
   },
   "roles": {
     "admin": "Admin",
@@ -331,6 +340,92 @@
       "accepted": "Accepted",
       "rejected": "Rejected",
       "expired": "Expired"
+    }
+  },
+  "signup": {
+    "title": "Create your account",
+    "hint": "You need an invite code from the company admin. Choose your own email and password.",
+    "invite": "Invite code",
+    "name": "Full name",
+    "passwordHint": "At least 8 characters.",
+    "submit": "Create account",
+    "backToLogin": "Back to sign in",
+    "loginLink": "Have an invite code? Create your account",
+    "invalidCode": "This invite code is not valid or was already used. Ask the admin for a new one.",
+    "emailExists": "An account with this email already exists. Go back and sign in instead.",
+    "weakPassword": "Password is too weak — use at least 8 characters.",
+    "confirmEmail": "Account created — check your email for a confirmation link, then sign in."
+  },
+  "hr": {
+    "myLeave": "My leave",
+    "approvals": "Approvals",
+    "annual": "Annual leave (days left)",
+    "sick": "Sick leave (days left)",
+    "newRequest": "Request leave",
+    "type": "Type",
+    "dates": "Dates",
+    "days": "Days",
+    "from": "From",
+    "to": "To",
+    "halfDay": "Half day",
+    "reason": "Reason",
+    "attachment": "Attachment (e.g. medical certificate)",
+    "submit": "Submit request",
+    "empty": "No leave requests yet.",
+    "confirmCancel": "Cancel this pending request?",
+    "pending": "Pending requests",
+    "nonePending": "No pending requests.",
+    "recentDecisions": "Recent decisions",
+    "comment": "Comment (optional)",
+    "confirmApprove": "Approving deducts the days from the balance. This cannot be undone.",
+    "exceeds": "This request exceeds the remaining balance — only the GM/VP can approve an exception.",
+    "viewAttachment": "View attachment",
+    "newAnnouncement": "New announcement",
+    "annTitle": "Title (English)",
+    "annTitleAr": "Title (Arabic)",
+    "annBody": "Text (English)",
+    "annBodyAr": "Text (Arabic)",
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "types": {
+      "annual": "Annual",
+      "sick": "Sick",
+      "casual": "Casual",
+      "unpaid": "Unpaid",
+      "mission": "Mission"
+    }
+  },
+  "att": {
+    "checkTab": "Check-in",
+    "checkIn": "Check in",
+    "checkOut": "Check out",
+    "checkedInAt": "Checked in at {{time}}",
+    "notCheckedIn": "Not checked in today",
+    "gpsNote": "Your location is attached if you allow it — it works either way.",
+    "lastWeek": "Last 7 days",
+    "noLogs": "No records.",
+    "withGps": "with location",
+    "noGps": "no location",
+    "visits": "Visits",
+    "newVisit": "Log a hospital visit",
+    "purpose": "Purpose",
+    "logVisit": "Log visit",
+    "visitLogged": "Visit logged.",
+    "myVisits": "My visits",
+    "noVisits": "No visits yet.",
+    "reports": "Reports",
+    "attendanceReport": "Daily attendance",
+    "visitsReport": "Visits by rep",
+    "visitCount": "{{n}} visits",
+    "purposes": {
+      "shelf_count": "Shelf count",
+      "sales_call": "Sales call",
+      "collection_follow_up": "Collection follow-up",
+      "delivery": "Delivery",
+      "other": "Other"
     }
   }
 }

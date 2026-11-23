@@ -3,6 +3,115 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { ALL_ROLES, DEPARTMENTS, Profile, Role } from '../lib/roles';
+import { InviteCode, generateInviteCode } from '../lib/hr';
+import { fmtDate } from '../lib/format';
+import { ErrorNote, PrimaryButton, inputCls } from '../components/ui';
+
+function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [role, setRole] = useState<Role>('employee');
+  const [department, setDepartment] = useState('');
+  const [copied, setCopied] = useState<string | null>(null);
+  const profileNames: Record<string, string> = {};
+  for (const p of profiles ?? []) profileNames[p.id] = p.full_name;
+
+  const { data: invites } = useQuery({
+    queryKey: ['invites'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('invite_codes').select('*')
+        .order('created_at', { ascending: false }).limit(100);
+      if (error) throw error;
+      return data as InviteCode[];
+    },
+  });
+
+  const create = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('invite_codes').insert({
+        code: generateInviteCode(),
+        role,
+        department: department || null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['invites'] }),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (code: string) => {
+      const { error } = await supabase.from('invite_codes').delete().eq('code', code);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['invites'] }),
+  });
+
+  function copy(code: string) {
+    const url = `${window.location.origin}${window.location.pathname}#/signup`;
+    navigator.clipboard.writeText(t('users.inviteMessage', { code, url }));
+    setCopied(code);
+    setTimeout(() => setCopied(null), 2500);
+  }
+
+  return (
+    <div className="bg-white rounded-lg border">
+      <div className="px-4 py-3 border-b">
+        <h2 className="font-semibold text-sm">{t('users.invitesTitle')}</h2>
+        <p className="text-xs text-gray-500 mt-1">{t('users.invitesHint')}</p>
+      </div>
+      <div className="px-4 py-3 flex flex-wrap items-end gap-3 border-b">
+        <label className="block">
+          <span className="block text-xs font-medium mb-1">{t('users.role')}</span>
+          <select className={`${inputCls} w-auto`} value={role} onChange={(e) => setRole(e.target.value as Role)}>
+            {ALL_ROLES.map((r) => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
+          </select>
+        </label>
+        <label className="block">
+          <span className="block text-xs font-medium mb-1">{t('users.department')}</span>
+          <select className={`${inputCls} w-auto`} value={department} onChange={(e) => setDepartment(e.target.value)}>
+            <option value="">{t('common.none')}</option>
+            {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+          </select>
+        </label>
+        <PrimaryButton disabled={create.isPending} onClick={() => create.mutate()}>
+          {t('users.newInvite')}
+        </PrimaryButton>
+      </div>
+      {(create.isError || remove.isError) && <div className="px-4"><ErrorNote message={t('common.error')} /></div>}
+      <div className="divide-y">
+        {!invites?.length && (
+          <p className="px-4 py-5 text-sm text-gray-500">{t('users.noInvites')}</p>
+        )}
+        {invites?.map((inv) => (
+          <div key={inv.code} className="px-4 py-2.5 flex flex-wrap items-center gap-3 text-sm">
+            <span className="font-mono font-bold tracking-widest" dir="ltr">{inv.code}</span>
+            <span className="text-xs bg-gray-100 rounded px-2 py-0.5">{t(`roles.${inv.role}`)}</span>
+            {inv.department && <span className="text-xs text-gray-500">{inv.department}</span>}
+            <span className="ms-auto text-xs text-gray-400">{fmtDate(inv.created_at)}</span>
+            {inv.used_by ? (
+              <span className="text-xs text-green-700">
+                {t('users.inviteUsedBy', { name: profileNames[inv.used_by] ?? '—' })}
+              </span>
+            ) : (
+              <>
+                <button className="text-brand-red text-sm font-medium" onClick={() => copy(inv.code)}>
+                  {copied === inv.code ? t('users.copied') : t('users.copyInvite')}
+                </button>
+                <button
+                  className="text-gray-400 text-sm"
+                  onClick={() => window.confirm(t('common.confirmDelete')) && remove.mutate(inv.code)}
+                >
+                  {t('common.delete')}
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface EditState {
   id: string;
@@ -61,9 +170,7 @@ export default function Users() {
         {message && <span className="text-sm text-gray-600">{message}</span>}
       </div>
 
-      <p className="text-sm text-gray-500 bg-white border rounded-lg px-4 py-3">
-        {t('users.inviteHint')}
-      </p>
+      <InvitesPanel profiles={users} />
 
       <div className="bg-white rounded-lg border overflow-x-auto">
         <table className="w-full text-sm">

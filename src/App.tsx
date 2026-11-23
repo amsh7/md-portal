@@ -1,11 +1,12 @@
+import { useEffect, useState } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
-import Placeholder from './pages/Placeholder';
 import CrmLayout from './pages/crm/CrmLayout';
 import Hospitals from './pages/crm/Hospitals';
 import HospitalDetail from './pages/crm/HospitalDetail';
@@ -23,7 +24,26 @@ import PurchaseOrders from './pages/purchasing/PurchaseOrders';
 import PoEditor from './pages/purchasing/PoEditor';
 import Quotations from './pages/purchasing/Quotations';
 import QuotationEditor from './pages/purchasing/QuotationEditor';
+import HrLayout from './pages/hr/HrLayout';
+import MyLeave from './pages/hr/MyLeave';
+import Approvals from './pages/hr/Approvals';
+import AnnouncementsAdmin from './pages/hr/AnnouncementsAdmin';
+import AttendanceLayout from './pages/attendance/AttendanceLayout';
+import CheckIn from './pages/attendance/CheckIn';
+import Visits from './pages/attendance/Visits';
+import Reports from './pages/attendance/Reports';
 import { navForRole } from './lib/roles';
+
+/** Hash-aware pre-login routing (HashRouter only mounts after sign-in). */
+function useHash() {
+  const [hash, setHash] = useState(window.location.hash);
+  useEffect(() => {
+    const onChange = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onChange);
+    return () => window.removeEventListener('hashchange', onChange);
+  }, []);
+  return hash;
+}
 
 /** Index tab: POs for admin/manager/warehouse; sales reps land on Quotations. */
 function PurchasingIndex() {
@@ -42,6 +62,7 @@ function Guard({ children, path }: { children: JSX.Element; path: string }) {
 export default function App() {
   const { session, profile, loading, signOut } = useAuth();
   const { t } = useTranslation();
+  const hash = useHash();
 
   if (loading) {
     return (
@@ -51,7 +72,7 @@ export default function App() {
     );
   }
 
-  if (!session) return <Login />;
+  if (!session) return hash.startsWith('#/signup') ? <Signup /> : <Login />;
 
   if (profile && !profile.active) {
     return (
@@ -89,8 +110,16 @@ export default function App() {
             <Route path="quotes" element={<Quotations />} />
             <Route path="quotes/:id" element={<QuotationEditor />} />
           </Route>
-          <Route path="hr" element={<Guard path="/hr"><Placeholder moduleKey="hr" /></Guard>} />
-          <Route path="attendance" element={<Guard path="/attendance"><Placeholder moduleKey="attendance" /></Guard>} />
+          <Route path="hr" element={<Guard path="/hr"><HrLayout /></Guard>}>
+            <Route index element={<MyLeave />} />
+            <Route path="approvals" element={<Approvals />} />
+            <Route path="announcements" element={<AnnouncementsAdmin />} />
+          </Route>
+          <Route path="attendance" element={<Guard path="/attendance"><AttendanceLayout /></Guard>}>
+            <Route index element={<CheckIn />} />
+            <Route path="visits" element={<Visits />} />
+            <Route path="reports" element={<Reports />} />
+          </Route>
           <Route path="users" element={<Guard path="/users"><Users /></Guard>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>

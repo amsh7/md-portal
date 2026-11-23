@@ -7,7 +7,9 @@ import { useAuth } from '../context/AuthContext';
 import { useHospitals, useLocations, useProducts, byId } from '../lib/queries';
 import { ShelfCount } from '../lib/counts';
 import { StockRow } from '../lib/types';
+import { LeaveBalance } from '../lib/hr';
 import { fmtDate, fmtQty } from '../lib/format';
+import CheckInButton from '../components/CheckInButton';
 
 interface Announcement {
   id: string;
@@ -62,6 +64,22 @@ export default function Dashboard() {
         .order('created_at', { ascending: false }).limit(500);
       if (error) throw error;
       return data as ShelfCount[];
+    },
+  });
+
+  const year = new Date().getFullYear();
+  const { data: balance } = useQuery({
+    queryKey: ['leave_balance', profile?.id, year],
+    enabled: !!profile,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leave_balances').select('*')
+        .eq('employee_id', profile!.id).eq('year', year).maybeSingle();
+      if (error) throw error;
+      return (data ?? {
+        employee_id: profile!.id, year,
+        annual_total: 21, annual_used: 0, sick_total: 7, sick_used: 0,
+      }) as LeaveBalance;
     },
   });
 
@@ -130,6 +148,18 @@ export default function Dashboard() {
   return (
     <div className="space-y-5 max-w-3xl">
       <h1 className="text-xl font-bold">{t('dashboard.welcome', { name: displayName })}</h1>
+
+      <div className="bg-white rounded-lg border p-4 flex flex-wrap items-center justify-between gap-4">
+        <CheckInButton />
+        {balance && (
+          <Link to="/hr" className="text-sm text-gray-600 hover:text-brand-red">
+            {t('dashboard.myBalance', {
+              annual: fmtQty(balance.annual_total - balance.annual_used),
+              sick: fmtQty(balance.sick_total - balance.sick_used),
+            })}
+          </Link>
+        )}
+      </div>
 
       {(isAM || isRep) && (
         <Panel title={t('alerts.title')}>

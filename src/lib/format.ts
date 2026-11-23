@@ -31,6 +31,13 @@ export function fmtMoney(value: number | null | undefined, currency: string): st
   }
 }
 
+/** HH:MM, 24-hour, Western numerals. */
+export function fmtTime(value: string | Date | null | undefined): string {
+  if (!value) return '—';
+  const d = typeof value === 'string' ? new Date(value) : value;
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
 export function fmtQty(value: number): string {
   return value.toLocaleString('en-EG');
 }

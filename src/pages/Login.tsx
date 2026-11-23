@@ -68,6 +68,9 @@ export default function Login() {
           >
             {t('login.submit')}
           </button>
+          <a href="#/signup" className="block text-center text-sm text-gray-500 hover:text-brand-red">
+            {t('signup.loginLink')}
+          </a>
         </form>
         <button
           type="button"
