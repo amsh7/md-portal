@@ -9,3 +9,22 @@ html {
 body {
   @apply bg-gray-100 text-gray-900;
 }
+
+/* Print views (PrintDoc portal): print only the document, not the app behind it */
+@media print {
+  body.print-mode #root {
+    display: none;
+  }
+  body.print-mode .print-overlay {
+    position: static;
+    overflow: visible;
+    background: white;
+  }
+  body.print-mode {
+    background: white;
+  }
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+}

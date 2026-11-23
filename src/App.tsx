@@ -18,7 +18,19 @@ import CountEditor from './pages/inventory/CountEditor';
 import Invoices from './pages/inventory/Invoices';
 import Products from './pages/inventory/Products';
 import Locations from './pages/inventory/Locations';
+import PurchasingLayout from './pages/purchasing/PurchasingLayout';
+import PurchaseOrders from './pages/purchasing/PurchaseOrders';
+import PoEditor from './pages/purchasing/PoEditor';
+import Quotations from './pages/purchasing/Quotations';
+import QuotationEditor from './pages/purchasing/QuotationEditor';
 import { navForRole } from './lib/roles';
+
+/** Index tab: POs for admin/manager/warehouse; sales reps land on Quotations. */
+function PurchasingIndex() {
+  const { profile } = useAuth();
+  if (profile?.role === 'sales_rep') return <Quotations />;
+  return <PurchaseOrders />;
+}
 
 function Guard({ children, path }: { children: JSX.Element; path: string }) {
   const { profile } = useAuth();
@@ -71,7 +83,12 @@ export default function App() {
             <Route path="products" element={<Products />} />
             <Route path="locations" element={<Locations />} />
           </Route>
-          <Route path="purchasing" element={<Guard path="/purchasing"><Placeholder moduleKey="purchasing" /></Guard>} />
+          <Route path="purchasing" element={<Guard path="/purchasing"><PurchasingLayout /></Guard>}>
+            <Route index element={<PurchasingIndex />} />
+            <Route path="pos/:id" element={<PoEditor />} />
+            <Route path="quotes" element={<Quotations />} />
+            <Route path="quotes/:id" element={<QuotationEditor />} />
+          </Route>
           <Route path="hr" element={<Guard path="/hr"><Placeholder moduleKey="hr" /></Guard>} />
           <Route path="attendance" element={<Guard path="/attendance"><Placeholder moduleKey="attendance" /></Guard>} />
           <Route path="users" element={<Guard path="/users"><Users /></Guard>} />

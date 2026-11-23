@@ -65,6 +65,19 @@ export default function Dashboard() {
     },
   });
 
+  const { data: draftPos } = useQuery({
+    queryKey: ['pos', 'draft'],
+    enabled: profile?.role === 'admin',
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('purchase_orders')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'draft');
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
   const { data: stock } = useQuery({
     queryKey: ['stock', 'all'],
     enabled: isAM,
@@ -111,7 +124,8 @@ export default function Dashboard() {
     return ar && h.name_ar ? h.name_ar : h.name;
   }
 
-  const noAlerts = isAM && !pending.length && !expiring.length && !lowStock.length && !overdue.length;
+  const noAlerts =
+    isAM && !pending.length && !expiring.length && !lowStock.length && !overdue.length && !draftPos;
 
   return (
     <div className="space-y-5 max-w-3xl">
@@ -129,6 +143,16 @@ export default function Dashboard() {
                 </p>
                 <Link to="/inventory/counts" className="text-sm text-brand-red hover:underline">
                   {t('counts.title')} →
+                </Link>
+              </div>
+            )}
+            {!!draftPos && (
+              <div className="px-4 py-3">
+                <p className="text-sm font-semibold text-amber-700 mb-1">
+                  {t('alerts.pendingPos')} ({draftPos})
+                </p>
+                <Link to="/purchasing" className="text-sm text-brand-red hover:underline">
+                  {t('po.title')} →
                 </Link>
               </div>
             )}

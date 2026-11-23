@@ -34,7 +34,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: 'dashboard', path: '/', roles: ['admin', 'manager', 'sales_rep', 'warehouse', 'hr', 'employee'] },
   { key: 'crm', path: '/crm', roles: ['admin', 'manager', 'sales_rep'] },
   { key: 'inventory', path: '/inventory', roles: ['admin', 'manager', 'sales_rep', 'warehouse'] },
-  { key: 'purchasing', path: '/purchasing', roles: ['admin', 'manager', 'sales_rep'] },
+  { key: 'purchasing', path: '/purchasing', roles: ['admin', 'manager', 'sales_rep', 'warehouse'] },
   { key: 'hr', path: '/hr', roles: ['admin', 'manager', 'sales_rep', 'warehouse', 'hr', 'employee'] },
   { key: 'attendance', path: '/attendance', roles: ['admin', 'manager', 'sales_rep', 'warehouse', 'hr', 'employee'] },
   { key: 'users', path: '/users', roles: ['admin'] },
