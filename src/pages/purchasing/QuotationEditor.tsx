@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
@@ -17,6 +17,7 @@ export default function QuotationEditor() {
   const { t, i18n } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const { data: hospitals } = useHospitals();
   const { data: products } = useProducts();
   const hospitalMap = byId(hospitals);
@@ -143,6 +144,17 @@ export default function QuotationEditor() {
         setDealId(openDeals[0].id);
         setDealPrompt(true);
       }
+    },
+  });
+
+  const deleteQuote = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('quotations').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['quotes'] });
+      navigate('/purchasing/quotes');
     },
   });
 
@@ -321,11 +333,20 @@ export default function QuotationEditor() {
         </Field>
       </div>
 
-      {(addLine.isError || removeLine.isError || save.isError || setStatus.isError) && (
+      {(addLine.isError || removeLine.isError || save.isError || setStatus.isError || deleteQuote.isError) && (
         <ErrorNote message={t('common.error')} />
       )}
 
       <div className="flex gap-2 justify-end flex-wrap">
+        {editable && profile?.role === 'admin' && (
+          <button
+            className="text-sm text-gray-500 border rounded px-4 py-2 hover:text-brand-red me-auto"
+            disabled={deleteQuote.isPending}
+            onClick={() => window.confirm(t('common.confirmDeleteDraft')) && deleteQuote.mutate()}
+          >
+            {t('common.deleteDraft')}
+          </button>
+        )}
         {!!lines?.length && (
           <button className="text-sm text-gray-600 border rounded px-4 py-2" onClick={() => setPrinting(true)}>
             {t('po.print')}

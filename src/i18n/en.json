@@ -78,7 +78,9 @@
     "date": "Date",
     "error": "Something went wrong. Try again.",
     "confirmDelete": "Delete this item? This cannot be undone.",
-    "readOnly": "Read-only"
+    "readOnly": "Read-only",
+    "deleteDraft": "Delete draft",
+    "confirmDeleteDraft": "Delete this draft? Its document number will not be reused. This cannot be undone."
   },
   "crm": {
     "hospitals": "Hospitals",
@@ -139,7 +141,8 @@
         "tender_quotation": "Tender / Quotation",
         "won": "Won",
         "lost": "Lost"
-      }
+      },
+      "cantDelete": "This deal is referenced by other records and can't be deleted."
     },
     "activity": {
       "new": "Log activity",
@@ -153,7 +156,10 @@
         "visit": "Visit"
       }
     },
-    "stockEmpty": "Nothing on this hospital's shelf yet. Stock appears here after a transfer from the warehouse."
+    "stockEmpty": "Nothing on this hospital's shelf yet. Stock appears here after a transfer from the warehouse.",
+    "deleteHospital": "Delete hospital",
+    "confirmDeleteHospital": "Delete this hospital with its contacts, deals and activity? This cannot be undone.",
+    "cantDeleteHospital": "This hospital has stock or invoice history and can't be deleted. Set its status to Dormant instead."
   },
   "inv": {
     "stock": "Stock on hand",
@@ -205,7 +211,9 @@
         "return": "Return",
         "adjustment": "Adjustment"
       }
-    }
+    },
+    "cantDeleteProduct": "This product has stock movements or documents and can't be deleted. Untick Active to hide it instead.",
+    "cantDeleteLocation": "This warehouse has stock movements and can't be deleted."
   },
   "counts": {
     "title": "Shelf counts",

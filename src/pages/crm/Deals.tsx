@@ -7,6 +7,7 @@ import { useHospitals, useProfiles, byId } from '../../lib/queries';
 import { DEAL_STAGES, Deal, DealStage } from '../../lib/types';
 import { fmtDate, fmtMoney } from '../../lib/format';
 import { EmptyState, ErrorNote, Field, Loading, Modal, PrimaryButton, inputCls } from '../../components/ui';
+import { isFkViolation } from '../../lib/errors';
 
 interface DealForm {
   id?: string;
@@ -39,6 +40,18 @@ export function DealFormModal({ deal, fixedHospitalId, onClose }: { deal?: Deal;
   const selectableHospitals = (hospitals ?? []).filter(
     (h) => profile?.role !== 'sales_rep' || h.assigned_rep_id === profile.id,
   );
+
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('deals').delete().eq('id', form.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['deals'] });
+      qc.invalidateQueries({ queryKey: ['deals', form.hospital_id] });
+      onClose();
+    },
+  });
 
   const save = useMutation({
     mutationFn: async () => {
@@ -106,7 +119,20 @@ export function DealFormModal({ deal, fixedHospitalId, onClose }: { deal?: Deal;
           <textarea className={inputCls} rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
         </Field>
         {save.isError && <ErrorNote message={t('common.error')} />}
+        {remove.isError && (
+          <ErrorNote message={isFkViolation(remove.error) ? t('crm.deal.cantDelete') : t('common.error')} />
+        )}
         <div className="flex justify-end gap-2">
+          {form.id && profile?.role === 'admin' && (
+            <button
+              type="button"
+              className="text-sm text-gray-500 px-3 me-auto hover:text-brand-red"
+              disabled={remove.isPending}
+              onClick={() => window.confirm(t('common.confirmDelete')) && remove.mutate()}
+            >
+              {t('common.delete')}
+            </button>
+          )}
           <button type="button" className="text-sm text-gray-500 px-3" onClick={onClose}>{t('common.cancel')}</button>
           <PrimaryButton type="submit" disabled={save.isPending}>{t('common.save')}</PrimaryButton>
         </div>

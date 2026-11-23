@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
@@ -22,6 +22,7 @@ export default function PoEditor() {
   const { t, i18n } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const { data: products } = useProducts();
   const { data: locations } = useLocations();
   const productMap = byId(products);
@@ -129,6 +130,17 @@ export default function PoEditor() {
       if (error) throw error;
     },
     onSuccess: refresh,
+  });
+
+  const deletePo = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('purchase_orders').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['pos'] });
+      navigate('/purchasing');
+    },
   });
 
   const receive = useMutation({
@@ -314,11 +326,20 @@ export default function PoEditor() {
         </Field>
       </div>
 
-      {(addLine.isError || removeLine.isError || save.isError || setStatus.isError) && (
+      {(addLine.isError || removeLine.isError || save.isError || setStatus.isError || deletePo.isError) && (
         <ErrorNote message={t('common.error')} />
       )}
 
       <div className="flex gap-2 justify-end flex-wrap">
+        {po.status === 'draft' && isAdmin && (
+          <button
+            className="text-sm text-gray-500 border rounded px-4 py-2 hover:text-brand-red me-auto"
+            disabled={deletePo.isPending}
+            onClick={() => window.confirm(t('common.confirmDeleteDraft')) && deletePo.mutate()}
+          >
+            {t('common.deleteDraft')}
+          </button>
+        )}
         {!!lines?.length && (
           <button className="text-sm text-gray-600 border rounded px-4 py-2" onClick={() => setPrinting(true)}>
             {t('po.print')}

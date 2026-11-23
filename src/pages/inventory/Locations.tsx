@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { useLocations } from '../../lib/queries';
 import { EmptyState, ErrorNote, Field, Loading, Modal, PrimaryButton, inputCls } from '../../components/ui';
+import { isFkViolation } from '../../lib/errors';
 
 export default function Locations() {
   const { t } = useTranslation();
@@ -11,6 +12,21 @@ export default function Locations() {
   const { data: locations, isLoading } = useLocations();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState('');
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const remove = useMutation({
+    mutationFn: async (lid: string) => {
+      const { error } = await supabase.from('locations').delete().eq('id', lid);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setDeleteError(null);
+      qc.invalidateQueries({ queryKey: ['locations'] });
+    },
+    onError: (err) => {
+      setDeleteError(isFkViolation(err) ? t('inv.cantDeleteLocation') : t('common.error'));
+    },
+  });
 
   const add = useMutation({
     mutationFn: async () => {
@@ -38,9 +54,19 @@ export default function Locations() {
       <div className="bg-white rounded-lg border divide-y">
         {!warehouses.length && <EmptyState hint={t('inv.emptyLocations')} />}
         {warehouses.map((l) => (
-          <div key={l.id} className="px-4 py-3 text-sm font-medium">{l.name}</div>
+          <div key={l.id} className="px-4 py-3 text-sm font-medium flex items-center justify-between gap-3">
+            {l.name}
+            <button
+              className="text-gray-400 text-sm hover:text-brand-red"
+              disabled={remove.isPending}
+              onClick={() => window.confirm(t('common.confirmDelete')) && remove.mutate(l.id)}
+            >
+              {t('common.delete')}
+            </button>
+          </div>
         ))}
       </div>
+      {deleteError && <ErrorNote message={deleteError} />}
 
       <div>
         <h2 className="font-semibold text-sm mb-2">{t('inv.hospitalShelf')}</h2>

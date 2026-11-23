@@ -8,6 +8,7 @@ import { useLocations, useProducts, useProfiles, byId } from '../../lib/queries'
 import { Activity, Contact, Deal, Hospital, StockRow } from '../../lib/types';
 import { ShelfCount, createShelfCount } from '../../lib/counts';
 import { fmtDate, fmtMoney, fmtQty } from '../../lib/format';
+import { isFkViolation } from '../../lib/errors';
 import { EmptyState, ErrorNote, Field, Loading, Modal, PrimaryButton, inputCls } from '../../components/ui';
 import { HospitalFormFields, HospitalForm } from './Hospitals';
 import { DealFormModal } from './Deals';
@@ -63,7 +64,14 @@ export default function HospitalDetail() {
         ))}
       </div>
 
-      {tab === 'info' && <InfoTab hospital={hospital} canEdit={canEdit} canAssignRep={profile?.role === 'admin' || profile?.role === 'manager'} />}
+      {tab === 'info' && (
+        <InfoTab
+          hospital={hospital}
+          canEdit={canEdit}
+          canAssignRep={profile?.role === 'admin' || profile?.role === 'manager'}
+          canDelete={profile?.role === 'admin'}
+        />
+      )}
       {tab === 'contacts' && <ContactsTab hospitalId={hospital.id} canEdit={canEdit} />}
       {tab === 'deals' && <DealsTab hospital={hospital} canEdit={canEdit} />}
       {tab === 'activity' && <ActivityTab hospitalId={hospital.id} canEdit={canEdit} />}
@@ -72,12 +80,14 @@ export default function HospitalDetail() {
   );
 }
 
-function InfoTab({ hospital, canEdit, canAssignRep }: { hospital: Hospital; canEdit: boolean; canAssignRep: boolean }) {
+function InfoTab({ hospital, canEdit, canAssignRep, canDelete }: { hospital: Hospital; canEdit: boolean; canAssignRep: boolean; canDelete: boolean }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const { data: profiles } = useProfiles();
   const profileMap = byId(profiles);
   const [editing, setEditing] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [form, setForm] = useState<HospitalForm>({
     name: hospital.name,
     name_ar: hospital.name_ar ?? '',
@@ -111,6 +121,21 @@ function InfoTab({ hospital, canEdit, canAssignRep }: { hospital: Hospital; canE
     },
   });
 
+  const remove = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('hospitals').delete().eq('id', hospital.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['hospitals'] });
+      qc.invalidateQueries({ queryKey: ['locations'] });
+      navigate('/crm');
+    },
+    onError: (err) => {
+      setDeleteError(isFkViolation(err) ? t('crm.cantDeleteHospital') : t('common.error'));
+    },
+  });
+
   const rows: [string, string][] = [
     [t('crm.name'), hospital.name],
     [t('crm.nameAr'), hospital.name_ar ?? '—'],
@@ -130,11 +155,21 @@ function InfoTab({ hospital, canEdit, canAssignRep }: { hospital: Hospital; canE
           </div>
         ))}
       </dl>
-      {canEdit && (
-        <div className="mt-4">
-          <PrimaryButton onClick={() => setEditing(true)}>{t('common.edit')}</PrimaryButton>
+      {(canEdit || canDelete) && (
+        <div className="mt-4 flex items-center gap-3">
+          {canEdit && <PrimaryButton onClick={() => setEditing(true)}>{t('common.edit')}</PrimaryButton>}
+          {canDelete && (
+            <button
+              className="text-sm text-gray-500 border rounded px-4 py-2 hover:text-brand-red"
+              disabled={remove.isPending}
+              onClick={() => window.confirm(t('crm.confirmDeleteHospital')) && remove.mutate()}
+            >
+              {t('crm.deleteHospital')}
+            </button>
+          )}
         </div>
       )}
+      {deleteError && <ErrorNote message={deleteError} />}
       {editing && (
         <Modal title={t('crm.editHospital')} onClose={() => setEditing(false)}>
           <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-4">

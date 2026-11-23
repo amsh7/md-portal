@@ -7,6 +7,7 @@ import { useProducts } from '../../lib/queries';
 import { Product } from '../../lib/types';
 import { fmtEGP } from '../../lib/format';
 import { EmptyState, ErrorNote, Field, Loading, Modal, PrimaryButton, inputCls } from '../../components/ui';
+import { isFkViolation } from '../../lib/errors';
 
 interface ProductForm {
   id?: string;
@@ -56,6 +57,17 @@ export default function Products() {
       const { error } = f.id
         ? await supabase.from('products').update(row).eq('id', f.id)
         : await supabase.from('products').insert(row);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['products'] });
+      setEditing(null);
+    },
+  });
+
+  const remove = useMutation({
+    mutationFn: async (pid: string) => {
+      const { error } = await supabase.from('products').delete().eq('id', pid);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -180,7 +192,20 @@ export default function Products() {
               {t('inv.active')}
             </label>
             {save.isError && <ErrorNote message={t('common.error')} />}
+            {remove.isError && (
+              <ErrorNote message={isFkViolation(remove.error) ? t('inv.cantDeleteProduct') : t('common.error')} />
+            )}
             <div className="flex justify-end gap-2">
+              {editing.id && profile?.role === 'admin' && (
+                <button
+                  type="button"
+                  className="text-sm text-gray-500 px-3 me-auto hover:text-brand-red"
+                  disabled={remove.isPending}
+                  onClick={() => window.confirm(t('common.confirmDelete')) && remove.mutate(editing.id!)}
+                >
+                  {t('common.delete')}
+                </button>
+              )}
               <button type="button" className="text-sm text-gray-500 px-3" onClick={() => setEditing(null)}>{t('common.cancel')}</button>
               <PrimaryButton type="submit" disabled={save.isPending}>{t('common.save')}</PrimaryButton>
             </div>
