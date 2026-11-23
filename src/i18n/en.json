@@ -30,7 +30,9 @@
     "announcements": "Announcements",
     "noAnnouncements": "No announcements yet.",
     "comingSoon": "This module arrives in a later phase.",
-    "myBalance": "Leave balance: {{annual}} annual · {{sick}} sick"
+    "myBalance": "Leave balance: {{annual}} annual · {{sick}} sick",
+    "quickLinks": "Quick actions",
+    "sickShort": "{{n}} sick days left"
   },
   "users": {
     "title": "User management",
@@ -58,7 +60,9 @@
     "copyInvite": "Copy invite",
     "copied": "Copied!",
     "inviteUsedBy": "Used by {{name}}",
-    "inviteMessage": "Your MD Portal invite code: {{code}}\nCreate your account here: {{url}}"
+    "inviteMessage": "Your MD Portal invite code: {{code}}\nCreate your account here: {{url}}",
+    "jobTitle": "Job title",
+    "jobTitlePh": "e.g. Business Development Manager"
   },
   "roles": {
     "admin": "Admin",
@@ -275,7 +279,8 @@
     "lastCount": "Last count: {{date}}",
     "neverCounted": "Never counted",
     "below": "{{qty}} in warehouses (min {{min}})",
-    "pendingPos": "Purchase orders awaiting approval"
+    "pendingPos": "Purchase orders awaiting approval",
+    "pendingLeaves": "Leave requests awaiting decision"
   },
   "po": {
     "title": "Purchase orders",

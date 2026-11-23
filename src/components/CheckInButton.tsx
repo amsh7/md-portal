@@ -8,7 +8,7 @@ import { fmtTime } from '../lib/format';
 
 /** Big mobile-first check-in/check-out button with today's state.
  *  GPS is attached when allowed; never blocks (spec §6.5). */
-export default function CheckInButton() {
+export default function CheckInButton({ dark = false }: { dark?: boolean }) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const qc = useQueryClient();
@@ -53,13 +53,15 @@ export default function CheckInButton() {
         onClick={() => log.mutate()}
         className={`font-bold rounded-lg px-8 py-4 text-base disabled:opacity-50 ${
           checkedIn
-            ? 'bg-white border-2 border-brand-black text-brand-black hover:bg-gray-50'
+            ? dark
+              ? 'bg-white text-brand-black hover:bg-gray-100'
+              : 'bg-white border-2 border-brand-black text-brand-black hover:bg-gray-50'
             : 'bg-brand-red text-white hover:bg-red-700'
         }`}
       >
         {log.isPending ? t('common.loading') : checkedIn ? t('att.checkOut') : t('att.checkIn')}
       </button>
-      <div className="text-sm text-gray-500">
+      <div className={`text-sm ${dark ? 'text-gray-300' : 'text-gray-500'}`}>
         {checkedIn && last
           ? t('att.checkedInAt', { time: fmtTime(last.ts) })
           : t('att.notCheckedIn')}

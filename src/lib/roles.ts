@@ -18,10 +18,24 @@ export interface Profile {
   full_name: string;
   full_name_ar: string | null;
   role: Role;
+  job_title: string | null;
   department: string | null;
   phone: string | null;
   active: boolean;
 }
+
+/** Suggestions for the free-text job title fields (not a closed list). */
+export const JOB_TITLES = [
+  'General Manager',
+  'VP',
+  'Business Development Manager',
+  'Sales Representative',
+  'Warehouse Keeper',
+  'HR Specialist',
+  'Accountant',
+  'Regulatory Affairs',
+  'Driver',
+] as const;
 
 /** Which sidebar modules each role can see. Frontend UX only — RLS enforces the real rules. */
 export interface NavItem {

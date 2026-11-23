@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
-import { ALL_ROLES, DEPARTMENTS, Profile, Role } from '../lib/roles';
+import { ALL_ROLES, DEPARTMENTS, JOB_TITLES, Profile, Role } from '../lib/roles';
 import { InviteCode, generateInviteCode } from '../lib/hr';
 import { fmtDate } from '../lib/format';
 import { ErrorNote, PrimaryButton, inputCls } from '../components/ui';
@@ -11,6 +11,7 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [role, setRole] = useState<Role>('employee');
+  const [jobTitle, setJobTitle] = useState('');
   const [department, setDepartment] = useState('');
   const [copied, setCopied] = useState<string | null>(null);
   const profileNames: Record<string, string> = {};
@@ -32,6 +33,7 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
       const { error } = await supabase.from('invite_codes').insert({
         code: generateInviteCode(),
         role,
+        job_title: jobTitle.trim() || null,
         department: department || null,
       });
       if (error) throw error;
@@ -62,6 +64,19 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
       </div>
       <div className="px-4 py-3 flex flex-wrap items-end gap-3 border-b">
         <label className="block">
+          <span className="block text-xs font-medium mb-1">{t('users.jobTitle')}</span>
+          <input
+            className={`${inputCls} w-52`}
+            list="job-titles"
+            placeholder={t('users.jobTitlePh')}
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+          />
+          <datalist id="job-titles">
+            {JOB_TITLES.map((jt) => <option key={jt} value={jt} />)}
+          </datalist>
+        </label>
+        <label className="block">
           <span className="block text-xs font-medium mb-1">{t('users.role')}</span>
           <select className={`${inputCls} w-auto`} value={role} onChange={(e) => setRole(e.target.value as Role)}>
             {ALL_ROLES.map((r) => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
@@ -86,6 +101,7 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
         {invites?.map((inv) => (
           <div key={inv.code} className="px-4 py-2.5 flex flex-wrap items-center gap-3 text-sm">
             <span className="font-mono font-bold tracking-widest" dir="ltr">{inv.code}</span>
+            {inv.job_title && <span className="text-xs font-medium">{inv.job_title}</span>}
             <span className="text-xs bg-gray-100 rounded px-2 py-0.5">{t(`roles.${inv.role}`)}</span>
             {inv.department && <span className="text-xs text-gray-500">{inv.department}</span>}
             <span className="ms-auto text-xs text-gray-400">{fmtDate(inv.created_at)}</span>
@@ -118,6 +134,7 @@ interface EditState {
   full_name: string;
   full_name_ar: string;
   role: Role;
+  job_title: string;
   department: string;
   phone: string;
 }
@@ -210,7 +227,14 @@ export default function Users() {
                       onChange={(e) => setEditing({ ...editing, full_name_ar: e.target.value })}
                     />
                   </td>
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 space-y-1">
+                    <input
+                      className="w-full border rounded px-2 py-1"
+                      list="job-titles"
+                      placeholder={t('users.jobTitle')}
+                      value={editing.job_title}
+                      onChange={(e) => setEditing({ ...editing, job_title: e.target.value })}
+                    />
                     <select
                       className="border rounded px-2 py-1"
                       value={editing.role}
@@ -255,6 +279,7 @@ export default function Users() {
                           full_name: editing.full_name,
                           full_name_ar: editing.full_name_ar || null,
                           role: editing.role,
+                          job_title: editing.job_title || null,
                           department: editing.department || null,
                           phone: editing.phone || null,
                         })
@@ -273,7 +298,12 @@ export default function Users() {
                     <div className="font-medium">{u.full_name}</div>
                     {u.full_name_ar && <div className="text-gray-500" dir="rtl">{u.full_name_ar}</div>}
                   </td>
-                  <td className="px-4 py-2.5">{t(`roles.${u.role}`)}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="font-medium">{u.job_title ?? t(`roles.${u.role}`)}</div>
+                    <span className="inline-block text-xs bg-gray-100 text-gray-600 rounded px-1.5 py-0.5 mt-0.5">
+                      {t(`roles.${u.role}`)}
+                    </span>
+                  </td>
                   <td className="px-4 py-2.5 hidden sm:table-cell">{u.department ?? t('common.none')}</td>
                   <td className="px-4 py-2.5 hidden md:table-cell" dir="ltr">
                     {u.phone ?? t('common.none')}
@@ -296,6 +326,7 @@ export default function Users() {
                           full_name: u.full_name,
                           full_name_ar: u.full_name_ar ?? '',
                           role: u.role,
+                          job_title: u.job_title ?? '',
                           department: u.department ?? '',
                           phone: u.phone ?? '',
                         })

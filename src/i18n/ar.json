@@ -30,7 +30,9 @@
     "announcements": "الإعلانات",
     "noAnnouncements": "لا توجد إعلانات بعد.",
     "comingSoon": "هذه الوحدة ستتوفر في مرحلة لاحقة.",
-    "myBalance": "رصيد الإجازات: {{annual}} سنوية · {{sick}} مرضية"
+    "myBalance": "رصيد الإجازات: {{annual}} سنوية · {{sick}} مرضية",
+    "quickLinks": "إجراءات سريعة",
+    "sickShort": "المتبقي من المرضية: {{n}} أيام"
   },
   "users": {
     "title": "إدارة المستخدمين",
@@ -58,7 +60,9 @@
     "copyInvite": "نسخ الدعوة",
     "copied": "تم النسخ!",
     "inviteUsedBy": "استخدمه {{name}}",
-    "inviteMessage": "كود دعوتك لبوابة MD:‏ {{code}}\nأنشئ حسابك من هنا: {{url}}"
+    "inviteMessage": "كود دعوتك لبوابة MD:‏ {{code}}\nأنشئ حسابك من هنا: {{url}}",
+    "jobTitle": "المسمى الوظيفي",
+    "jobTitlePh": "مثال: مدير تطوير الأعمال"
   },
   "roles": {
     "admin": "مسؤول النظام",
@@ -275,7 +279,8 @@
     "lastCount": "آخر جرد: {{date}}",
     "neverCounted": "لم يُجرَد من قبل",
     "below": "{{qty}} في المخازن (الحد الأدنى {{min}})",
-    "pendingPos": "أوامر شراء بانتظار الاعتماد"
+    "pendingPos": "أوامر شراء بانتظار الاعتماد",
+    "pendingLeaves": "طلبات إجازة بانتظار القرار"
   },
   "po": {
     "title": "أوامر الشراء",
