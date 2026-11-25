@@ -8,8 +8,9 @@ import { WeeklyReport as WR, WeeklyReportDay, addDays, weekStartOf } from '../..
 import { fmtDate } from '../../lib/format';
 import { EmptyState, ErrorNote, Field, Loading, PrimaryButton, inputCls } from '../../components/ui';
 
+/** Working days only: Sunday → Thursday (Fri/Sat off). */
 function emptyWeek(weekStart: string): WeeklyReportDay[] {
-  return Array.from({ length: 7 }, (_, i) => ({
+  return Array.from({ length: 5 }, (_, i) => ({
     date: addDays(weekStart, i),
     time_in: '',
     time_out: '',
@@ -61,6 +62,14 @@ export default function WeeklyReport() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [week, myReport?.id, myReport?.status]);
 
+  const removeReport = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('weekly_reports').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['weekly_reports'] }),
+  });
+
   const save = useMutation({
     mutationFn: async (submit: boolean) => {
       const { error } = await supabase.from('weekly_reports').upsert(
@@ -104,7 +113,7 @@ export default function WeeklyReport() {
           <select className={inputCls} value={week} onChange={(e) => setWeek(e.target.value)}>
             {weeks.map((w) => (
               <option key={w} value={w}>
-                {fmtDate(w)} – {fmtDate(addDays(w, 6))}
+                {fmtDate(w)} – {fmtDate(addDays(w, 4))}
               </option>
             ))}
           </select>
@@ -186,10 +195,21 @@ export default function WeeklyReport() {
         <details key={r.id} className="bg-white rounded-lg border">
           <summary className="px-4 py-3 cursor-pointer flex flex-wrap gap-x-4 gap-y-1 items-center text-sm">
             <span className="font-semibold">{repName(r.rep_id)}</span>
-            <span className="text-gray-500">{fmtDate(r.week_start)} – {fmtDate(addDays(r.week_start, 6))}</span>
+            <span className="text-gray-500">{fmtDate(r.week_start)} – {fmtDate(addDays(r.week_start, 4))}</span>
             <span className="text-xs text-gray-400">
               {t('wr.submittedOn')} {r.submitted_at ? fmtDate(r.submitted_at) : ''}
             </span>
+            {profile?.role === 'admin' && (
+              <button
+                className="ms-auto text-xs text-gray-400 hover:text-brand-red"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (window.confirm(t('common.confirmDelete'))) removeReport.mutate(r.id);
+                }}
+              >
+                {t('common.delete')}
+              </button>
+            )}
           </summary>
           <table className="w-full text-sm border-t">
             <tbody className="divide-y">

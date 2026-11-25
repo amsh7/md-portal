@@ -89,10 +89,10 @@ export interface WeeklyReport {
   created_at: string;
 }
 
-/** Saturday that starts the week containing d (Egyptian work week Sat–Fri). */
+/** Sunday that starts the week containing d (work week Sun–Thu; Fri/Sat off). */
 export function weekStartOf(d: Date): string {
   const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const off = (x.getDay() + 1) % 7; // Sat=6 → 0, Sun=0 → 1, … Fri=5 → 6
+  const off = x.getDay(); // Sun=0 … Sat=6 (Fri/Sat count toward the week that began the previous Sunday)
   x.setDate(x.getDate() - off);
   const m = String(x.getMonth() + 1).padStart(2, '0');
   const day = String(x.getDate()).padStart(2, '0');

@@ -60,7 +60,8 @@ export default function CountEditor() {
   const isAM = profile?.role === 'admin' || profile?.role === 'manager';
   const isMine = count?.rep_id === profile?.id;
   const editable = count?.status === 'draft' && (isMine || isAM);
-  const canDecide = count?.status === 'submitted' && canApprove(profile);
+  // Shelf counts: manager (Wael) OR the GM/approver may decide (Ahmed's rule, Nov 2026).
+  const canDecide = count?.status === 'submitted' && (isAM || canApprove(profile));
 
   async function persistLines() {
     for (const l of lines ?? []) {
