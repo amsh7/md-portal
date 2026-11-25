@@ -1,40 +1,42 @@
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Dashboard from './pages/Dashboard';
-import Users from './pages/Users';
-import CrmLayout from './pages/crm/CrmLayout';
-import Hospitals from './pages/crm/Hospitals';
-import HospitalDetail from './pages/crm/HospitalDetail';
-import Deals from './pages/crm/Deals';
-import InventoryLayout from './pages/inventory/InventoryLayout';
-import Stock from './pages/inventory/Stock';
-import Movements from './pages/inventory/Movements';
-import Counts from './pages/inventory/Counts';
-import CountEditor from './pages/inventory/CountEditor';
-import Invoices from './pages/inventory/Invoices';
-import Products from './pages/inventory/Products';
-import Locations from './pages/inventory/Locations';
-import PurchasingLayout from './pages/purchasing/PurchasingLayout';
-import PurchaseOrders from './pages/purchasing/PurchaseOrders';
-import PoEditor from './pages/purchasing/PoEditor';
-import Quotations from './pages/purchasing/Quotations';
-import QuotationEditor from './pages/purchasing/QuotationEditor';
-import HrLayout from './pages/hr/HrLayout';
-import MyLeave from './pages/hr/MyLeave';
-import Approvals from './pages/hr/Approvals';
-import OfficeRequests from './pages/hr/OfficeRequests';
-import AnnouncementsAdmin from './pages/hr/AnnouncementsAdmin';
-import AttendanceLayout from './pages/attendance/AttendanceLayout';
-import CheckIn from './pages/attendance/CheckIn';
-import Visits from './pages/attendance/Visits';
-import WeeklyReport from './pages/attendance/WeeklyReport';
-import Reports from './pages/attendance/Reports';
 import { navForRole } from './lib/roles';
+
+// Each page loads on demand (code-splitting keeps the first load small).
+const Signup = lazy(() => import('./pages/Signup'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Users = lazy(() => import('./pages/Users'));
+const CrmLayout = lazy(() => import('./pages/crm/CrmLayout'));
+const Hospitals = lazy(() => import('./pages/crm/Hospitals'));
+const HospitalDetail = lazy(() => import('./pages/crm/HospitalDetail'));
+const Deals = lazy(() => import('./pages/crm/Deals'));
+const InventoryLayout = lazy(() => import('./pages/inventory/InventoryLayout'));
+const Stock = lazy(() => import('./pages/inventory/Stock'));
+const Movements = lazy(() => import('./pages/inventory/Movements'));
+const Counts = lazy(() => import('./pages/inventory/Counts'));
+const CountEditor = lazy(() => import('./pages/inventory/CountEditor'));
+const Invoices = lazy(() => import('./pages/inventory/Invoices'));
+const Products = lazy(() => import('./pages/inventory/Products'));
+const Locations = lazy(() => import('./pages/inventory/Locations'));
+const PurchasingLayout = lazy(() => import('./pages/purchasing/PurchasingLayout'));
+const PurchaseOrders = lazy(() => import('./pages/purchasing/PurchaseOrders'));
+const PoEditor = lazy(() => import('./pages/purchasing/PoEditor'));
+const Quotations = lazy(() => import('./pages/purchasing/Quotations'));
+const QuotationEditor = lazy(() => import('./pages/purchasing/QuotationEditor'));
+const HrLayout = lazy(() => import('./pages/hr/HrLayout'));
+const MyLeave = lazy(() => import('./pages/hr/MyLeave'));
+const Approvals = lazy(() => import('./pages/hr/Approvals'));
+const OfficeRequests = lazy(() => import('./pages/hr/OfficeRequests'));
+const AnnouncementsAdmin = lazy(() => import('./pages/hr/AnnouncementsAdmin'));
+const AttendanceLayout = lazy(() => import('./pages/attendance/AttendanceLayout'));
+const CheckIn = lazy(() => import('./pages/attendance/CheckIn'));
+const Visits = lazy(() => import('./pages/attendance/Visits'));
+const WeeklyReport = lazy(() => import('./pages/attendance/WeeklyReport'));
+const Reports = lazy(() => import('./pages/attendance/Reports'));
 
 /** Hash-aware pre-login routing (HashRouter only mounts after sign-in). */
 function useHash() {
@@ -74,7 +76,15 @@ export default function App() {
     );
   }
 
-  if (!session) return hash.startsWith('#/signup') ? <Signup /> : <Login />;
+  if (!session) {
+    return hash.startsWith('#/signup') ? (
+      <Suspense fallback={<div className="min-h-screen bg-brand-black" />}>
+        <Signup />
+      </Suspense>
+    ) : (
+      <Login />
+    );
+  }
 
   if (profile && !profile.active) {
     return (
@@ -89,6 +99,13 @@ export default function App() {
 
   return (
     <HashRouter>
+      <Suspense
+        fallback={
+          <div className="min-h-screen flex items-center justify-center text-gray-400">
+            {t('common.loading')}
+          </div>
+        }
+      >
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
@@ -128,6 +145,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
+      </Suspense>
     </HashRouter>
   );
 }

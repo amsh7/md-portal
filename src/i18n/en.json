@@ -74,10 +74,6 @@
     "hr": "HR",
     "employee": "Employee"
   },
-  "placeholder": {
-    "title": "{{module}}",
-    "body": "This module is being built in an upcoming phase."
-  },
   "common": {
     "loading": "Loading…",
     "none": "—",
