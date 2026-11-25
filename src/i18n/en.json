@@ -62,7 +62,9 @@
     "inviteUsedBy": "Used by {{name}}",
     "inviteMessage": "Your MD Portal invite code: {{code}}\nCreate your account here: {{url}}",
     "jobTitle": "Job title",
-    "jobTitlePh": "e.g. Business Development Manager"
+    "jobTitlePh": "e.g. Business Development Manager",
+    "approverFlag": "Approver (GM/VP)",
+    "financeFlag": "Finance approver"
   },
   "roles": {
     "admin": "Admin",
@@ -93,7 +95,8 @@
     "confirmDelete": "Delete this item? This cannot be undone.",
     "readOnly": "Read-only",
     "deleteDraft": "Delete draft",
-    "confirmDeleteDraft": "Delete this draft? Its document number will not be reused. This cannot be undone."
+    "confirmDeleteDraft": "Delete this draft? Its document number will not be reused. This cannot be undone.",
+    "qty": "Qty"
   },
   "crm": {
     "hospitals": "Hospitals",
@@ -280,7 +283,10 @@
     "neverCounted": "Never counted",
     "below": "{{qty}} in warehouses (min {{min}})",
     "pendingPos": "Purchase orders awaiting approval",
-    "pendingLeaves": "Leave requests awaiting decision"
+    "pendingLeaves": "Leave requests awaiting decision",
+    "officeFinance": "Office requests waiting for the money check",
+    "officeApprove": "Office requests waiting for final approval",
+    "weeklyDue": "Last week's report not submitted yet"
   },
   "po": {
     "title": "Purchase orders",
@@ -400,8 +406,12 @@
       "sick": "Sick",
       "casual": "Casual",
       "unpaid": "Unpaid",
-      "mission": "Mission"
-    }
+      "mission": "Mission",
+      "personal": "Personal",
+      "permission": "Permission (hours)"
+    },
+    "timeFrom": "From (time)",
+    "timeTo": "To (time)"
   },
   "att": {
     "checkTab": "Check-in",
@@ -432,5 +442,42 @@
       "delivery": "Delivery",
       "other": "Other"
     }
+  },
+  "oreq": {
+    "tab": "Office requests",
+    "hint": "Need something for the office — stationery, coffee, furniture? Request it here. Finance confirms the money is available, then the GM or VP gives the final approval.",
+    "item": "Item",
+    "itemPlaceholder": "e.g. A4 paper, 2 boxes",
+    "new": "New request",
+    "mine": "My requests",
+    "noneMine": "No requests yet.",
+    "financeQueue": "Waiting for the money check (Finance)",
+    "approvalQueue": "Waiting for final approval",
+    "noneWaiting": "Nothing waiting.",
+    "confirmFunds": "Money available",
+    "fundsQuestion": "Confirm that the money is available for this purchase?",
+    "financeNote": "Finance",
+    "status": {
+      "pending_finance": "With Finance",
+      "pending_approval": "Awaiting approval",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    }
+  },
+  "wr": {
+    "tab": "Weekly report",
+    "week": "Week",
+    "hint": "Fill in your arrival and leaving times for each day and where you went. You can save a draft during the week and submit once the week is over.",
+    "day": "Day",
+    "timeIn": "Came in",
+    "timeOut": "Left",
+    "where": "Where / notes",
+    "wherePlaceholder": "e.g. 9–10 office, then Qasr El Ainy",
+    "saveDraft": "Save draft",
+    "submit": "Submit week",
+    "confirmSubmit": "Submit this week's report? It can't be changed afterwards.",
+    "submittedOn": "Submitted",
+    "tooEarly": "You can submit this report only after the week ends.",
+    "noneSubmitted": "No weekly reports submitted yet."
   }
 }

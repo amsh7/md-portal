@@ -137,6 +137,8 @@ interface EditState {
   job_title: string;
   department: string;
   phone: string;
+  is_approver: boolean;
+  is_finance_approver: boolean;
 }
 
 export default function Users() {
@@ -246,6 +248,22 @@ export default function Users() {
                         </option>
                       ))}
                     </select>
+                    <label className="flex items-center gap-1.5 text-xs">
+                      <input
+                        type="checkbox"
+                        checked={editing.is_approver}
+                        onChange={(e) => setEditing({ ...editing, is_approver: e.target.checked })}
+                      />
+                      {t('users.approverFlag')}
+                    </label>
+                    <label className="flex items-center gap-1.5 text-xs">
+                      <input
+                        type="checkbox"
+                        checked={editing.is_finance_approver}
+                        onChange={(e) => setEditing({ ...editing, is_finance_approver: e.target.checked })}
+                      />
+                      {t('users.financeFlag')}
+                    </label>
                   </td>
                   <td className="px-4 py-2 hidden sm:table-cell">
                     <select
@@ -282,6 +300,8 @@ export default function Users() {
                           job_title: editing.job_title || null,
                           department: editing.department || null,
                           phone: editing.phone || null,
+                          is_approver: editing.is_approver,
+                          is_finance_approver: editing.is_finance_approver,
                         })
                       }
                     >
@@ -303,6 +323,16 @@ export default function Users() {
                     <span className="inline-block text-xs bg-gray-100 text-gray-600 rounded px-1.5 py-0.5 mt-0.5">
                       {t(`roles.${u.role}`)}
                     </span>
+                    {u.is_approver && (
+                      <span className="inline-block text-xs bg-blue-100 text-blue-700 rounded px-1.5 py-0.5 mt-0.5 ms-1">
+                        {t('users.approverFlag')}
+                      </span>
+                    )}
+                    {u.is_finance_approver && (
+                      <span className="inline-block text-xs bg-purple-100 text-purple-700 rounded px-1.5 py-0.5 mt-0.5 ms-1">
+                        {t('users.financeFlag')}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-2.5 hidden sm:table-cell">{u.department ?? t('common.none')}</td>
                   <td className="px-4 py-2.5 hidden md:table-cell" dir="ltr">
@@ -329,6 +359,8 @@ export default function Users() {
                           job_title: u.job_title ?? '',
                           department: u.department ?? '',
                           phone: u.phone ?? '',
+                          is_approver: u.is_approver,
+                          is_finance_approver: u.is_finance_approver,
                         })
                       }
                     >

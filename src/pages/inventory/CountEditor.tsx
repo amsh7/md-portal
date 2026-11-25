@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { canApprove } from '../../lib/roles';
 import { useHospitals, useProducts, useProfiles, byId } from '../../lib/queries';
 import { ShelfCount, ShelfCountLine, lineFlag } from '../../lib/counts';
 import { fmtDate, fmtQty } from '../../lib/format';
@@ -59,7 +60,7 @@ export default function CountEditor() {
   const isAM = profile?.role === 'admin' || profile?.role === 'manager';
   const isMine = count?.rep_id === profile?.id;
   const editable = count?.status === 'draft' && (isMine || isAM);
-  const canDecide = count?.status === 'submitted' && isAM;
+  const canDecide = count?.status === 'submitted' && canApprove(profile);
 
   async function persistLines() {
     for (const l of lines ?? []) {

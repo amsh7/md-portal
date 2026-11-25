@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { canApprove } from '../../lib/roles';
 import { useLocations, useProducts, byId } from '../../lib/queries';
 import { PoLine, PurchaseOrder, linesTotal } from '../../lib/purchasing';
 import { fmtDate, fmtMoney, fmtQty } from '../../lib/format';
@@ -354,7 +355,7 @@ export default function PoEditor() {
             {t('common.save')}
           </button>
         )}
-        {po.status === 'draft' && isAdmin && (
+        {po.status === 'draft' && canApprove(profile) && (
           <PrimaryButton
             disabled={setStatus.isPending || !lines?.length}
             onClick={() => window.confirm(t('po.confirmApprove')) && setStatus.mutate('approved')}

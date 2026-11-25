@@ -11,12 +11,14 @@ export default function AttendanceLayout() {
     }`;
 
   const showReports = profile && ['admin', 'manager', 'hr'].includes(profile.role);
+  const showWeekly = profile && ['admin', 'manager', 'hr', 'sales_rep'].includes(profile.role);
 
   return (
     <div>
       <div className="flex gap-1 border-b mb-4 overflow-x-auto">
         <NavLink to="/attendance" end className={tabCls}>{t('att.checkTab')}</NavLink>
         <NavLink to="/attendance/visits" className={tabCls}>{t('att.visits')}</NavLink>
+        {showWeekly && <NavLink to="/attendance/weekly" className={tabCls}>{t('wr.tab')}</NavLink>}
         {showReports && <NavLink to="/attendance/reports" className={tabCls}>{t('att.reports')}</NavLink>}
       </div>
       <Outlet />

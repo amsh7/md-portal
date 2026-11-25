@@ -27,10 +27,12 @@ import QuotationEditor from './pages/purchasing/QuotationEditor';
 import HrLayout from './pages/hr/HrLayout';
 import MyLeave from './pages/hr/MyLeave';
 import Approvals from './pages/hr/Approvals';
+import OfficeRequests from './pages/hr/OfficeRequests';
 import AnnouncementsAdmin from './pages/hr/AnnouncementsAdmin';
 import AttendanceLayout from './pages/attendance/AttendanceLayout';
 import CheckIn from './pages/attendance/CheckIn';
 import Visits from './pages/attendance/Visits';
+import WeeklyReport from './pages/attendance/WeeklyReport';
 import Reports from './pages/attendance/Reports';
 import { navForRole } from './lib/roles';
 
@@ -112,12 +114,14 @@ export default function App() {
           </Route>
           <Route path="hr" element={<Guard path="/hr"><HrLayout /></Guard>}>
             <Route index element={<MyLeave />} />
+            <Route path="requests" element={<OfficeRequests />} />
             <Route path="approvals" element={<Approvals />} />
             <Route path="announcements" element={<AnnouncementsAdmin />} />
           </Route>
           <Route path="attendance" element={<Guard path="/attendance"><AttendanceLayout /></Guard>}>
             <Route index element={<CheckIn />} />
             <Route path="visits" element={<Visits />} />
+            <Route path="weekly" element={<WeeklyReport />} />
             <Route path="reports" element={<Reports />} />
           </Route>
           <Route path="users" element={<Guard path="/users"><Users /></Guard>} />

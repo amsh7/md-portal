@@ -25,6 +25,8 @@ export default function MyLeave() {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [halfDay, setHalfDay] = useState(false);
+  const [timeFrom, setTimeFrom] = useState('');
+  const [timeTo, setTimeTo] = useState('');
   const [reason, setReason] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const year = new Date().getFullYear();
@@ -39,7 +41,7 @@ export default function MyLeave() {
       if (error) throw error;
       return (data ?? {
         employee_id: profile!.id, year,
-        annual_total: 21, annual_used: 0, sick_total: 7, sick_used: 0,
+        annual_total: 30, annual_used: 0, sick_total: 7, sick_used: 0,
       }) as LeaveBalance;
     },
   });
@@ -66,11 +68,14 @@ export default function MyLeave() {
         if (upErr) throw upErr;
         attachment_path = path;
       }
+      const isPermission = type === 'permission';
       const { error } = await supabase.from('leave_requests').insert({
         type,
         start_date: start,
-        end_date: halfDay ? start : end,
-        half_day: halfDay,
+        end_date: isPermission || halfDay ? start : end,
+        half_day: isPermission ? false : halfDay,
+        start_time: isPermission ? timeFrom : null,
+        end_time: isPermission ? timeTo : null,
         reason: reason || null,
         attachment_path,
       });
@@ -79,7 +84,8 @@ export default function MyLeave() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['my_leave'] });
       setRequesting(false);
-      setType('annual'); setStart(''); setEnd(''); setHalfDay(false); setReason(''); setFile(null);
+      setType('annual'); setStart(''); setEnd(''); setHalfDay(false);
+      setTimeFrom(''); setTimeTo(''); setReason(''); setFile(null);
     },
   });
 
@@ -91,9 +97,12 @@ export default function MyLeave() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['my_leave'] }),
   });
 
+  const isPermission = type === 'permission';
+
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (start && (halfDay || end)) submit.mutate();
+    if (!start) return;
+    if (isPermission ? timeFrom && timeTo : halfDay || end) submit.mutate();
   }
 
   if (isLoading) return <Loading />;
@@ -145,9 +154,12 @@ export default function MyLeave() {
                 <td className="px-4 py-2.5">
                   {fmtDate(r.start_date)}{r.start_date !== r.end_date && <> – {fmtDate(r.end_date)}</>}
                   {r.half_day && <span className="text-xs text-gray-400"> ({t('hr.halfDay')})</span>}
+                  {r.type === 'permission' && r.start_time && (
+                    <span className="text-xs text-gray-400" dir="ltr"> {r.start_time.slice(0, 5)}–{r.end_time?.slice(0, 5)}</span>
+                  )}
                   {r.review_comment && <div className="text-xs text-gray-500">{r.review_comment}</div>}
                 </td>
-                <td className="px-4 py-2.5 text-end">{fmtQty(leaveDays(r))}</td>
+                <td className="px-4 py-2.5 text-end">{r.type === 'permission' ? '—' : fmtQty(leaveDays(r))}</td>
                 <td className="px-4 py-2.5"><LeaveStatusBadge status={r.status} /></td>
                 <td className="px-4 py-2.5 text-end">
                   {r.status === 'pending' && (
@@ -173,20 +185,32 @@ export default function MyLeave() {
                 {LEAVE_TYPES.map((lt) => <option key={lt} value={lt}>{t(`hr.types.${lt}`)}</option>)}
               </select>
             </Field>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={halfDay} onChange={(e) => setHalfDay(e.target.checked)} />
-              {t('hr.halfDay')}
-            </label>
+            {!isPermission && (
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={halfDay} onChange={(e) => setHalfDay(e.target.checked)} />
+                {t('hr.halfDay')}
+              </label>
+            )}
             <div className="grid grid-cols-2 gap-3">
-              <Field label={halfDay ? t('common.date') : t('hr.from')} required>
+              <Field label={isPermission || halfDay ? t('common.date') : t('hr.from')} required>
                 <input type="date" required className={inputCls} value={start} onChange={(e) => setStart(e.target.value)} />
               </Field>
-              {!halfDay && (
+              {!isPermission && !halfDay && (
                 <Field label={t('hr.to')} required>
                   <input type="date" required min={start} className={inputCls} value={end} onChange={(e) => setEnd(e.target.value)} />
                 </Field>
               )}
             </div>
+            {isPermission && (
+              <div className="grid grid-cols-2 gap-3">
+                <Field label={t('hr.timeFrom')} required>
+                  <input type="time" required className={inputCls} value={timeFrom} onChange={(e) => setTimeFrom(e.target.value)} />
+                </Field>
+                <Field label={t('hr.timeTo')} required>
+                  <input type="time" required className={inputCls} value={timeTo} onChange={(e) => setTimeTo(e.target.value)} />
+                </Field>
+              </div>
+            )}
             <Field label={t('hr.reason')}>
               <textarea className={inputCls} rows={2} value={reason} onChange={(e) => setReason(e.target.value)} />
             </Field>

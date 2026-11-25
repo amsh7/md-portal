@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { canApprove } from '../../lib/roles';
 
 export default function HrLayout() {
   const { t } = useTranslation();
@@ -11,12 +12,14 @@ export default function HrLayout() {
     }`;
 
   const isHr = profile && ['admin', 'hr'].includes(profile.role);
+  const showApprovals = isHr || canApprove(profile);
 
   return (
     <div>
       <div className="flex gap-1 border-b mb-4 overflow-x-auto">
         <NavLink to="/hr" end className={tabCls}>{t('hr.myLeave')}</NavLink>
-        {isHr && <NavLink to="/hr/approvals" className={tabCls}>{t('hr.approvals')}</NavLink>}
+        <NavLink to="/hr/requests" className={tabCls}>{t('oreq.tab')}</NavLink>
+        {showApprovals && <NavLink to="/hr/approvals" className={tabCls}>{t('hr.approvals')}</NavLink>}
         {isHr && <NavLink to="/hr/announcements" className={tabCls}>{t('dashboard.announcements')}</NavLink>}
       </div>
       <Outlet />

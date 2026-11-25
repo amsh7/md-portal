@@ -7,7 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useHospitals, useLocations, useProducts, byId } from '../lib/queries';
 import { ShelfCount } from '../lib/counts';
 import { StockRow } from '../lib/types';
-import { LeaveBalance, LeaveRequest } from '../lib/hr';
+import { LeaveBalance, LeaveRequest, addDays, weekStartOf } from '../lib/hr';
+import { canApprove, isFinanceApprover } from '../lib/roles';
 import { fmtDate, fmtQty } from '../lib/format';
 import CheckInButton from '../components/CheckInButton';
 
@@ -59,6 +60,8 @@ export default function Dashboard() {
   const isAM = isAdmin || role === 'manager';
   const isRep = role === 'sales_rep';
   const isHr = isAdmin || role === 'hr';
+  const approver = canApprove(profile);
+  const finance = isFinanceApprover(profile);
 
   const { data: announcements } = useQuery({
     queryKey: ['announcements'],
@@ -88,7 +91,7 @@ export default function Dashboard() {
       if (error) throw error;
       return (data ?? {
         employee_id: profile!.id, year,
-        annual_total: 21, annual_used: 0, sick_total: 7, sick_used: 0,
+        annual_total: 30, annual_used: 0, sick_total: 7, sick_used: 0,
       }) as LeaveBalance;
     },
   });
@@ -117,7 +120,7 @@ export default function Dashboard() {
 
   const { data: draftPos } = useQuery({
     queryKey: ['pos', 'draft'],
-    enabled: isAdmin,
+    enabled: approver,
     queryFn: async () => {
       const { count, error } = await supabase
         .from('purchase_orders')
@@ -130,7 +133,7 @@ export default function Dashboard() {
 
   const { data: pendingLeaves } = useQuery({
     queryKey: ['leave_requests', 'pending_count'],
-    enabled: isHr,
+    enabled: isHr || approver,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leave_requests').select('id, employee_id, status')
@@ -139,6 +142,34 @@ export default function Dashboard() {
       return data as Pick<LeaveRequest, 'id' | 'employee_id' | 'status'>[];
     },
   });
+
+  const { data: officePending } = useQuery({
+    queryKey: ['office_requests', 'pending'],
+    enabled: finance || approver,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('office_requests').select('id, status')
+        .in('status', ['pending_finance', 'pending_approval']);
+      if (error) throw error;
+      return data as { id: string; status: string }[];
+    },
+  });
+  const officeFinanceCount = (officePending ?? []).filter((r) => r.status === 'pending_finance').length;
+  const officeApprovalCount = (officePending ?? []).filter((r) => r.status === 'pending_approval').length;
+
+  const lastFinishedWeek = addDays(weekStartOf(new Date()), -7);
+  const { data: myWeekly } = useQuery({
+    queryKey: ['weekly_reports', 'me', lastFinishedWeek],
+    enabled: isRep,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('weekly_reports').select('id, status')
+        .eq('rep_id', profile!.id).eq('week_start', lastFinishedWeek).maybeSingle();
+      if (error) throw error;
+      return data as { id: string; status: string } | null;
+    },
+  });
+  const weeklyDue = isRep && myWeekly !== undefined && (!myWeekly || myWeekly.status === 'draft');
 
   // --- derived alert data ---
   const now = Date.now();
@@ -178,8 +209,11 @@ export default function Dashboard() {
 
   const tiles: { to: string; count: number; label: string; tone: 'red' | 'amber' }[] = [];
   if (isAM && pendingCounts.length) tiles.push({ to: '/inventory/counts', count: pendingCounts.length, label: t('alerts.pendingCounts'), tone: 'amber' });
-  if (isAdmin && draftPos) tiles.push({ to: '/purchasing', count: draftPos, label: t('alerts.pendingPos'), tone: 'amber' });
-  if (isHr && pendingLeaves?.length) tiles.push({ to: '/hr/approvals', count: pendingLeaves.length, label: t('alerts.pendingLeaves'), tone: 'amber' });
+  if (approver && draftPos) tiles.push({ to: '/purchasing', count: draftPos, label: t('alerts.pendingPos'), tone: 'amber' });
+  if ((isHr || approver) && pendingLeaves?.length) tiles.push({ to: '/hr/approvals', count: pendingLeaves.length, label: t('alerts.pendingLeaves'), tone: 'amber' });
+  if (finance && officeFinanceCount) tiles.push({ to: '/hr/requests', count: officeFinanceCount, label: t('alerts.officeFinance'), tone: 'amber' });
+  if (approver && officeApprovalCount) tiles.push({ to: '/hr/requests', count: officeApprovalCount, label: t('alerts.officeApprove'), tone: 'amber' });
+  if (weeklyDue) tiles.push({ to: '/attendance/weekly', count: 1, label: t('alerts.weeklyDue'), tone: 'amber' });
   if ((isAM || isRep) && overdue.length) tiles.push({ to: isRep ? '/crm' : '/inventory/counts', count: overdue.length, label: isRep ? t('alerts.myDueCounts') : t('alerts.overdueCounts'), tone: 'amber' });
   if (isAM && expiring.length) tiles.push({ to: '/inventory', count: expiring.length, label: t('alerts.expiring'), tone: 'red' });
   if (isAM && lowStock.length) tiles.push({ to: '/inventory/products', count: lowStock.length, label: t('alerts.lowStock'), tone: 'red' });

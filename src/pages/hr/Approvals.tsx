@@ -74,6 +74,9 @@ export default function Approvals() {
         <td className="px-4 py-2.5">
           {fmtDate(r.start_date)}{r.start_date !== r.end_date && <> – {fmtDate(r.end_date)}</>}
           {r.half_day && <span className="text-xs text-gray-400"> ({t('hr.halfDay')})</span>}
+          {r.type === 'permission' && r.start_time && (
+            <span className="text-xs text-gray-400" dir="ltr"> {r.start_time.slice(0, 5)}–{r.end_time?.slice(0, 5)}</span>
+          )}
           {r.reason && <div className="text-xs text-gray-500">{r.reason}</div>}
           {r.attachment_path && (
             <button className="text-xs text-brand-red hover:underline" onClick={() => openAttachment(r.attachment_path!)}>
@@ -81,7 +84,7 @@ export default function Approvals() {
             </button>
           )}
         </td>
-        <td className="px-4 py-2.5 text-end">{fmtQty(leaveDays(r))}</td>
+        <td className="px-4 py-2.5 text-end">{r.type === 'permission' ? '—' : fmtQty(leaveDays(r))}</td>
         <td className="px-4 py-2.5">
           {actions ? (
             <div className="flex gap-2 justify-end">

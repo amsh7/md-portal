@@ -22,6 +22,18 @@ export interface Profile {
   department: string | null;
   phone: string | null;
   active: boolean;
+  is_approver: boolean;
+  is_finance_approver: boolean;
+}
+
+/** GM (admin) or anyone flagged as approver (VP) — mirrors public.can_approve() in the DB. */
+export function canApprove(p: Profile | null | undefined): boolean {
+  return !!p && (p.role === 'admin' || p.is_approver);
+}
+
+/** Finance approver (money check on office requests) — mirrors public.is_finance(). */
+export function isFinanceApprover(p: Profile | null | undefined): boolean {
+  return !!p && (p.role === 'admin' || p.is_finance_approver);
 }
 
 /** Suggestions for the free-text job title fields (not a closed list). */
