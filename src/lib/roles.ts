@@ -37,6 +37,30 @@ export function isFinanceApprover(p: Profile | null | undefined): boolean {
   return !!p && (p.role === 'admin' || p.is_approver || p.is_finance_approver);
 }
 
+/**
+ * Invite positions: the admin picks ONE of these when creating an invite,
+ * and the role, department and approver flags are all derived from it.
+ */
+export interface Position {
+  key: string; // i18n key under positions.*
+  title: string; // stored as the profile's job_title
+  role: Role;
+  department: (typeof DEPARTMENTS)[number] | null;
+  is_approver?: boolean;
+  is_finance_approver?: boolean;
+}
+
+export const POSITIONS: Position[] = [
+  { key: 'vp', title: 'VP', role: 'manager', department: 'Admin', is_approver: true },
+  { key: 'salesManager', title: 'Sales Manager', role: 'manager', department: 'Sales' },
+  { key: 'bdm', title: 'Business Development Manager', role: 'manager', department: 'Sales' },
+  { key: 'salesRep', title: 'Sales Representative', role: 'sales_rep', department: 'Sales' },
+  { key: 'financeManager', title: 'Finance Manager', role: 'employee', department: 'Finance', is_finance_approver: true },
+  { key: 'warehouseSupervisor', title: 'Warehouse Supervisor', role: 'warehouse', department: 'Warehouse' },
+  { key: 'hrSpecialist', title: 'HR Specialist', role: 'hr', department: 'Admin' },
+  { key: 'officeEmployee', title: 'Office Employee', role: 'employee', department: 'Office' },
+];
+
 /** Suggestions for the free-text job title fields (not a closed list). */
 export const JOB_TITLES = [
   'General Manager',

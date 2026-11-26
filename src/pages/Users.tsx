@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
-import { ALL_ROLES, DEPARTMENTS, JOB_TITLES, Profile, Role } from '../lib/roles';
+import { ALL_ROLES, DEPARTMENTS, JOB_TITLES, POSITIONS, Profile, Role } from '../lib/roles';
 import { InviteCode, generateInviteCode } from '../lib/hr';
 import { fmtDate } from '../lib/format';
 import { ErrorNote, PrimaryButton, inputCls } from '../components/ui';
@@ -10,9 +10,8 @@ import { ErrorNote, PrimaryButton, inputCls } from '../components/ui';
 function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const [role, setRole] = useState<Role>('employee');
+  const [positionKey, setPositionKey] = useState('officeEmployee');
   const [jobTitle, setJobTitle] = useState('');
-  const [department, setDepartment] = useState('');
   const [copied, setCopied] = useState<string | null>(null);
   const profileNames: Record<string, string> = {};
   for (const p of profiles ?? []) profileNames[p.id] = p.full_name;
@@ -28,13 +27,25 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
     },
   });
 
+  // The single Finance seat: hide the Finance Manager position once someone
+  // holds it or an unsent invite already carries it (DB enforces it too).
+  const financeSeatTaken =
+    (profiles ?? []).some((p) => p.is_finance_approver) ||
+    (invites ?? []).some((i) => i.is_finance_approver && !i.used_by);
+  const positions = POSITIONS.filter(
+    (p) => !(p.is_finance_approver && financeSeatTaken) || p.key === positionKey,
+  );
+  const position = POSITIONS.find((p) => p.key === positionKey) ?? POSITIONS[POSITIONS.length - 1];
+
   const create = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('invite_codes').insert({
         code: generateInviteCode(),
-        role,
-        job_title: jobTitle.trim() || null,
-        department: department || null,
+        role: position.role,
+        job_title: jobTitle.trim() || position.title,
+        department: position.department,
+        is_approver: !!position.is_approver,
+        is_finance_approver: !!position.is_finance_approver,
       });
       if (error) throw error;
     },
@@ -64,30 +75,25 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
       </div>
       <div className="px-4 py-3 flex flex-wrap items-end gap-3 border-b">
         <label className="block">
-          <span className="block text-xs font-medium mb-1">{t('users.jobTitle')}</span>
+          <span className="block text-xs font-medium mb-1">{t('users.position')}</span>
+          <select
+            className={`${inputCls} w-auto`}
+            value={positionKey}
+            onChange={(e) => setPositionKey(e.target.value)}
+          >
+            {positions.map((p) => (
+              <option key={p.key} value={p.key}>{t(`positions.${p.key}`)}</option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <span className="block text-xs font-medium mb-1">{t('users.exactTitle')}</span>
           <input
             className={`${inputCls} w-52`}
-            list="job-titles"
-            placeholder={t('users.jobTitlePh')}
+            placeholder={position.title}
             value={jobTitle}
             onChange={(e) => setJobTitle(e.target.value)}
           />
-          <datalist id="job-titles">
-            {JOB_TITLES.map((jt) => <option key={jt} value={jt} />)}
-          </datalist>
-        </label>
-        <label className="block">
-          <span className="block text-xs font-medium mb-1">{t('users.role')}</span>
-          <select className={`${inputCls} w-auto`} value={role} onChange={(e) => setRole(e.target.value as Role)}>
-            {ALL_ROLES.map((r) => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
-          </select>
-        </label>
-        <label className="block">
-          <span className="block text-xs font-medium mb-1">{t('users.department')}</span>
-          <select className={`${inputCls} w-auto`} value={department} onChange={(e) => setDepartment(e.target.value)}>
-            <option value="">{t('common.none')}</option>
-            {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
-          </select>
         </label>
         <PrimaryButton disabled={create.isPending} onClick={() => create.mutate()}>
           {t('users.newInvite')}
@@ -103,6 +109,12 @@ function InvitesPanel({ profiles }: { profiles: Profile[] | undefined }) {
             <span className="font-mono font-bold tracking-widest" dir="ltr">{inv.code}</span>
             {inv.job_title && <span className="text-xs font-medium">{inv.job_title}</span>}
             <span className="text-xs bg-gray-100 rounded px-2 py-0.5">{t(`roles.${inv.role}`)}</span>
+            {inv.is_approver && (
+              <span className="text-xs bg-blue-50 text-blue-700 rounded px-2 py-0.5">{t('users.approverFlag')}</span>
+            )}
+            {inv.is_finance_approver && (
+              <span className="text-xs bg-purple-50 text-purple-700 rounded px-2 py-0.5">{t('users.financeFlag')}</span>
+            )}
             {inv.department && <span className="text-xs text-gray-500">{inv.department}</span>}
             <span className="ms-auto text-xs text-gray-400">{fmtDate(inv.created_at)}</span>
             {inv.used_by ? (
@@ -194,6 +206,11 @@ export default function Users() {
       </div>
 
       <InvitesPanel profiles={users} />
+
+      {/* Title suggestions for the edit-row job title input. */}
+      <datalist id="job-titles">
+        {JOB_TITLES.map((jt) => <option key={jt} value={jt} />)}
+      </datalist>
 
       <div className="bg-white rounded-lg border overflow-x-auto">
         <table className="w-full text-sm">

@@ -64,7 +64,9 @@
     "jobTitle": "Job title",
     "jobTitlePh": "e.g. Business Development Manager",
     "approverFlag": "Approver (GM/VP)",
-    "financeFlag": "Finance approver"
+    "financeFlag": "Finance approver",
+    "position": "Position",
+    "exactTitle": "Exact job title (optional)"
   },
   "roles": {
     "admin": "Admin",
@@ -475,5 +477,15 @@
     "submittedOn": "Submitted",
     "tooEarly": "You can submit this report only after the week ends.",
     "noneSubmitted": "No weekly reports submitted yet."
+  },
+  "positions": {
+    "vp": "VP",
+    "salesManager": "Sales Manager",
+    "bdm": "Business Development Manager",
+    "salesRep": "Sales Representative",
+    "financeManager": "Finance Manager",
+    "warehouseSupervisor": "Warehouse Supervisor",
+    "hrSpecialist": "HR Specialist",
+    "officeEmployee": "Office Employee"
   }
 }

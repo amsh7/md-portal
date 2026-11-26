@@ -62,6 +62,8 @@ export interface InviteCode {
   created_at: string;
   used_by: string | null;
   used_at: string | null;
+  is_approver: boolean;
+  is_finance_approver: boolean;
 }
 
 export function leaveDays(r: { start_date: string; end_date: string; half_day: boolean; type?: LeaveType }): number {

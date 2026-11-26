@@ -64,7 +64,9 @@
     "jobTitle": "المسمى الوظيفي",
     "jobTitlePh": "مثال: مدير تطوير الأعمال",
     "approverFlag": "مُعتمِد (المدير العام / نائب الرئيس)",
-    "financeFlag": "مُعتمِد مالي"
+    "financeFlag": "مُعتمِد مالي",
+    "position": "المنصب",
+    "exactTitle": "المسمى الوظيفي الدقيق (اختياري)"
   },
   "roles": {
     "admin": "مسؤول النظام",
@@ -475,5 +477,15 @@
     "submittedOn": "أُرسل",
     "tooEarly": "يمكن إرسال التقرير فقط بعد انتهاء الأسبوع.",
     "noneSubmitted": "لا توجد تقارير أسبوعية مرسلة بعد."
+  },
+  "positions": {
+    "vp": "نائب الرئيس (VP)",
+    "salesManager": "مدير المبيعات",
+    "bdm": "مدير تطوير الأعمال",
+    "salesRep": "مندوب مبيعات",
+    "financeManager": "المدير المالي",
+    "warehouseSupervisor": "مشرف المخزن",
+    "hrSpecialist": "أخصائي موارد بشرية",
+    "officeEmployee": "موظف مكتب"
   }
 }

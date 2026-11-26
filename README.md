@@ -39,7 +39,7 @@ Find both values under **Project Settings → API**. The anon/publishable key is
 ## Admin runbook
 
 **Add a user** (invite-code flow, from Phase 5):
-1. MD Portal → **Users → Invite codes**: pick the role (and department), click **New invite code**.
+1. MD Portal → **Users → Invite codes**: pick the **Position** (VP, Sales Manager, Sales Representative, Finance Manager, Warehouse Supervisor, HR Specialist, Office Employee…), click **New invite code**. The position sets the access level, department, and any approver flags automatically — there is nothing else to configure (migration 014). The Finance Manager position disappears from the list once that single seat is taken.
 2. Click **Copy invite** and send it to the person (WhatsApp etc.) — it includes the sign-up link.
 3. They open the link, enter the code, their own name, email and password. Their account starts immediately with the role you chose on the code. Each code works exactly once.
 
@@ -57,7 +57,7 @@ Find both values under **Project Settings → API**. The anon/publishable key is
 - **Leave:** 30 annual + 7 sick days per year. Request types: Annual, Sick, Personal (full days), Permission (a time range within one day), Unpaid, Mission. All need approval; only Annual and Sick deduct from a balance. Over-balance exceptions: GM/approver only.
 - **Weekly rep reports:** the work week is **Sunday–Thursday**. Each sales rep records daily comings/goings (Attendance → Weekly report) and submits after the week ends (from Friday). Submitted reports are locked (admin can delete one); management reads them — no approval step.
 - **Office-supply requests** (HR → Office requests): any employee requests items; the **Finance Manager** confirms money is available; then GM/VP gives the final decision. "Finance approver" is a **single seat** — the database allows exactly one holder (intended: Bahaa), and the checkbox disappears from other rows once taken. The GM or VP can perform either step themselves.
-- **After Amr and Bahaa sign up:** Amr gets role `manager` (so all sections appear in his menu) + job title "VP" + the "Approver (GM/VP)" tick; Bahaa stays `employee` with the "Finance approver" tick (Users → Edit).
+- **Inviting the key people:** choose the matching Position on the invite — **VP** for Amr (arrives as an Approver automatically), **Finance Manager** for Bahaa (arrives holding the Finance seat), **Sales Manager**/**Business Development Manager** for Wael, **Warehouse Supervisor** for Mohamed Eid. No post-signup ticking needed; the checkboxes on Users → Edit remain as a manual fallback (e.g. for accounts created via the Supabase dashboard).
 
 ## Design-ahead notes
 
