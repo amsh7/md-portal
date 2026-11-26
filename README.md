@@ -56,8 +56,8 @@ Find both values under **Project Settings → API**. The anon/publishable key is
 - **Approvals — one of two.** Every approval (purchase orders, leave requests and balance exceptions, office requests' final step) can be given by the GM **or** anyone with the **"Approver (GM/VP)"** checkbox on Users (intended: Amr, the VP). One of the two is enough. Exception by choice: **shelf counts** can also be approved by a `manager` (Wael), since they drive hospital invoicing.
 - **Leave:** 30 annual + 7 sick days per year. Request types: Annual, Sick, Personal (full days), Permission (a time range within one day), Unpaid, Mission. All need approval; only Annual and Sick deduct from a balance. Over-balance exceptions: GM/approver only.
 - **Weekly rep reports:** the work week is **Sunday–Thursday**. Each sales rep records daily comings/goings (Attendance → Weekly report) and submits after the week ends (from Friday). Submitted reports are locked (admin can delete one); management reads them — no approval step.
-- **Office-supply requests** (HR → Office requests): any employee requests items; the **"Finance approver"** (intended: Bahaa, Finance Manager) confirms money is available; then GM/approver gives the final decision. The GM can perform either step as a fallback.
-- **After Amr and Bahaa sign up:** tick "Approver (GM/VP)" on Amr's row and "Finance approver" on Bahaa's row (Users → Edit).
+- **Office-supply requests** (HR → Office requests): any employee requests items; the **Finance Manager** confirms money is available; then GM/VP gives the final decision. "Finance approver" is a **single seat** — the database allows exactly one holder (intended: Bahaa), and the checkbox disappears from other rows once taken. The GM or VP can perform either step themselves.
+- **After Amr and Bahaa sign up:** Amr gets role `manager` (so all sections appear in his menu) + job title "VP" + the "Approver (GM/VP)" tick; Bahaa stays `employee` with the "Finance approver" tick (Users → Edit).
 
 ## Design-ahead notes
 

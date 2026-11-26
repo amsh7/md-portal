@@ -159,6 +159,10 @@ export default function Users() {
     },
   });
 
+  // The Finance approver is a single seat: once someone holds it, the
+  // checkbox disappears from everyone else's edit row (DB enforces it too).
+  const financeSeatHolder = users?.find((x) => x.is_finance_approver);
+
   const save = useMutation({
     mutationFn: async (patch: Partial<Profile> & { id: string }) => {
       const { id, ...fields } = patch;
@@ -256,14 +260,16 @@ export default function Users() {
                       />
                       {t('users.approverFlag')}
                     </label>
-                    <label className="flex items-center gap-1.5 text-xs">
-                      <input
-                        type="checkbox"
-                        checked={editing.is_finance_approver}
-                        onChange={(e) => setEditing({ ...editing, is_finance_approver: e.target.checked })}
-                      />
-                      {t('users.financeFlag')}
-                    </label>
+                    {(!financeSeatHolder || financeSeatHolder.id === editing.id) && (
+                      <label className="flex items-center gap-1.5 text-xs">
+                        <input
+                          type="checkbox"
+                          checked={editing.is_finance_approver}
+                          onChange={(e) => setEditing({ ...editing, is_finance_approver: e.target.checked })}
+                        />
+                        {t('users.financeFlag')}
+                      </label>
+                    )}
                   </td>
                   <td className="px-4 py-2 hidden sm:table-cell">
                     <select

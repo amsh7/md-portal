@@ -33,7 +33,8 @@ export function canApprove(p: Profile | null | undefined): boolean {
 
 /** Finance approver (money check on office requests) — mirrors public.is_finance(). */
 export function isFinanceApprover(p: Profile | null | undefined): boolean {
-  return !!p && (p.role === 'admin' || p.is_finance_approver);
+  // The money-check step: the Finance Manager seat holder, plus GM/VP who can do any approval.
+  return !!p && (p.role === 'admin' || p.is_approver || p.is_finance_approver);
 }
 
 /** Suggestions for the free-text job title fields (not a closed list). */
